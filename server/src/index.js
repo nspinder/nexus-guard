@@ -6,6 +6,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { authRouter } from './routes/auth.js';
 import { emailRouter } from './routes/email.js';
 import { callRouter } from './routes/call.js';
+import { stripeRouter } from './routes/stripe.js';
 
 dotenv.config({ path: '../.env.local' });
 
@@ -27,6 +28,7 @@ app.locals.anthropic = anthropic;
 app.use('/api/auth', authRouter);
 app.use('/api/email', emailRouter);
 app.use('/api/call', callRouter);
+app.use('/api/stripe', stripeRouter);
 
 // Health check
 app.get('/health', (req, res) => {

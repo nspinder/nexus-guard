@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifyToken } from '../middleware/clerk.js';
 import { analyzeEmailForScam } from '../services/scamAnalyzer.js';
+import { resetMonthlyEmailUsage } from '../services/stripe.js';
 
 export const emailRouter = express.Router();
 
@@ -22,6 +23,19 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
       return res.status(403).json({ error: 'Email analysis not consented' });
     }
 
+    // Check monthly limit
+    const monthlyLimit = await resetMonthlyEmailUsage(user.id, req.app.locals.prisma);
+
+    if (user.monthlyEmailUsage >= monthlyLimit && monthlyLimit > 0) {
+      return res.status(429).json({
+        error: 'Monthly email limit reached',
+        tier: user.subscriptionTier,
+        monthlyLimit,
+        used: user.monthlyEmailUsage,
+        upgradeUrl: '/api/stripe/checkout',
+      });
+    }
+
     // Analyze with Claude
     const analysis = await analyzeEmailForScam(
       req.app.locals.anthropic,
@@ -41,6 +55,16 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
       },
     });
 
+    // Increment usage (for free tier tracking)
+    await req.app.locals.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        monthlyEmailUsage: {
+          increment: 1,
+        },
+      },
+    });
+
     // If high scam probability, create alert
     if (analysis.probability > 70) {
       await req.app.locals.prisma.alert.create({
@@ -57,6 +81,10 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
     res.json({
       email,
       analysis,
+      monthlyUsage: {
+        used: user.monthlyEmailUsage + 1,
+        limit: monthlyLimit,
+      },
     });
   } catch (error) {
     console.error('Email analysis error:', error);

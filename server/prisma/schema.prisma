@@ -15,6 +15,11 @@ model User {
   clerkId               String   @unique
   email                 String   @unique
   subscriptionTier      String   @default("free") // free | pro | enterprise
+  stripeCustomerId      String?  @unique
+  stripeSubscriptionId  String?
+  monthlyEmailLimit     Int      @default(100) // Updated based on tier
+  monthlyEmailUsage     Int      @default(0) // Resets monthly
+  emailUsageResetDate   DateTime? // When usage counter resets
   emailConsent          Boolean  @default(false)
   callConsent           Boolean  @default(false)
   dataRetentionDays     Int      @default(90)
