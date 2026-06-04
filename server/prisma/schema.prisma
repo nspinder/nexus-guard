@@ -20,6 +20,11 @@ model User {
   monthlyEmailLimit     Int      @default(100) // Updated based on tier
   monthlyEmailUsage     Int      @default(0) // Resets monthly
   emailUsageResetDate   DateTime? // When usage counter resets
+
+  // OAuth integrations
+  gmailRefreshToken     String?
+  outlookRefreshToken   String?
+
   emailConsent          Boolean  @default(false)
   callConsent           Boolean  @default(false)
   dataRetentionDays     Int      @default(90)
