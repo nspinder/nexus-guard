@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, AlertTriangle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import UpgradePrompt from './UpgradePrompt';
 
 export default function EmailAnalyzer({ onAlert, authToken }) {
   const [formData, setFormData] = useState({
@@ -11,6 +12,9 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [monthlyUsage, setMonthlyUsage] = useState(0);
+  const [monthlyLimit, setMonthlyLimit] = useState(100);
+  const [subscriptionTier, setSubscriptionTier] = useState('free');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,6 +35,13 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
       });
 
       setResult(response.data);
+
+      // Update usage stats
+      if (response.data.monthlyUsage) {
+        setMonthlyUsage(response.data.monthlyUsage.used);
+        setMonthlyLimit(response.data.monthlyUsage.limit);
+      }
+
       if (response.data.analysis.probability > 70) {
         onAlert({
           type: 'email',
@@ -42,10 +53,24 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
 
       setFormData({ sender: '', subject: '', bodyPreview: '' });
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to analyze email');
+      const errorData = err.response?.data;
+      if (err.response?.status === 429) {
+        // Usage limit hit
+        setMonthlyUsage(errorData.used);
+        setMonthlyLimit(errorData.monthlyLimit);
+        setSubscriptionTier(errorData.tier);
+        setError(errorData.error);
+      } else {
+        setError(errorData?.error || 'Failed to analyze email');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUpgrade = () => {
+    // Open upgrade in a new context or modal
+    alert('Redirect to pricing page. Feature coming soon!');
   };
 
   return (
@@ -54,6 +79,15 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
         <Mail className="w-6 h-6 text-blue-400" />
         <h2 className="text-2xl font-bold text-white">Email Scam Analyzer</h2>
       </div>
+
+      {monthlyLimit > 0 && (
+        <UpgradePrompt
+          monthlyUsage={monthlyUsage}
+          monthlyLimit={monthlyLimit}
+          onUpgrade={handleUpgrade}
+          tier={subscriptionTier}
+        />
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4 mb-6">
         <div>
@@ -169,6 +203,30 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
               <h4 className="text-white font-medium mb-2">Analysis Details</h4>
               <p className="text-slate-300 text-sm">{result.analysis.reasoning}</p>
             </div>
+
+            {/* Usage indicator */}
+            {result.monthlyUsage && monthlyLimit > 0 && (
+              <div className="border-t border-slate-700 pt-4">
+                <p className="text-slate-400 text-sm mb-2">
+                  Monthly Usage: {result.monthlyUsage.used} of {result.monthlyUsage.limit}
+                </p>
+                <div className="w-full bg-slate-700/50 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all ${
+                      result.monthlyUsage.used >= result.monthlyUsage.limit
+                        ? 'bg-red-500'
+                        : 'bg-blue-500'
+                    }`}
+                    style={{
+                      width: `${Math.min(
+                        (result.monthlyUsage.used / result.monthlyUsage.limit) * 100,
+                        100
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
