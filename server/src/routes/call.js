@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifyToken } from '../middleware/clerk.js';
 import { analyzeCallForScam } from '../services/scamAnalyzer.js';
+import { sendScamAlertEmail } from '../services/emailNotifier.js';
 
 export const callRouter = express.Router();
 
@@ -42,7 +43,7 @@ callRouter.post('/analyze', verifyToken, async (req, res) => {
       },
     });
 
-    // If high scam probability, create alert
+    // If high scam probability, create alert and send notifications
     if (analysis.probability > 75) {
       await req.app.locals.prisma.alert.create({
         data: {
@@ -52,6 +53,15 @@ callRouter.post('/analyze', verifyToken, async (req, res) => {
           scamScore: analysis.probability,
           alertSentAt: new Date(),
         },
+      });
+
+      // Send email notification (async, don't wait)
+      sendScamAlertEmail(user.email, {
+        type: 'call',
+        probability: analysis.probability,
+        phoneNumber,
+      }).catch((error) => {
+        console.error('Failed to send alert email:', error);
       });
     }
 
