@@ -8,6 +8,7 @@ import { emailRouter } from './routes/email.js';
 import { callRouter } from './routes/call.js';
 import { stripeRouter } from './routes/stripe.js';
 import { gmailRouter } from './routes/gmail.js';
+import { outlookRouter } from './routes/outlook.js';
 
 dotenv.config({ path: '../.env.local' });
 
@@ -31,6 +32,7 @@ app.use('/api/email', emailRouter);
 app.use('/api/call', callRouter);
 app.use('/api/stripe', stripeRouter);
 app.use('/api/email/gmail', gmailRouter);
+app.use('/api/email/outlook', outlookRouter);
 
 // Health check
 app.get('/health', (req, res) => {
