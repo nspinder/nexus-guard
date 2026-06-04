@@ -78,6 +78,15 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
         },
       });
 
+      // Emit real-time WebSocket event
+      req.app.locals.io.to(`user:${user.id}`).emit('scam_detected', {
+        type: 'email',
+        probability: analysis.probability,
+        sender,
+        subject,
+        timestamp: new Date(),
+      });
+
       // Send email notification (async, don't wait)
       sendScamAlertEmail(user.email, {
         type: 'email',

@@ -4,6 +4,8 @@ import EmailAnalyzer from '../components/EmailAnalyzer';
 import CallAnalyzer from '../components/CallAnalyzer';
 import AlertsPanel from '../components/AlertsPanel';
 import ConsentSettings from '../components/ConsentSettings';
+import { useRealtimeAlerts } from '../hooks/useRealtimeAlerts';
+import { notifyScamDetected } from '../services/notifications';
 
 export default function Dashboard({ user, authToken }) {
   const [activeTab, setActiveTab] = useState('alerts');
@@ -47,6 +49,21 @@ export default function Dashboard({ user, authToken }) {
   const handleNewAlert = (alert) => {
     setAlerts([alert, ...alerts]);
   };
+
+  // Listen for real-time alerts from server
+  useRealtimeAlerts(user?.id, (scamData) => {
+    // Add to local alerts
+    handleNewAlert({
+      type: scamData.type,
+      sender: scamData.sender,
+      phoneNumber: scamData.phoneNumber,
+      probability: scamData.probability,
+      timestamp: new Date(),
+    });
+
+    // Send browser notification
+    notifyScamDetected(scamData);
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
