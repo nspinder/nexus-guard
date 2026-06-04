@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Phone, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
-export default function CallAnalyzer({ onAlert }) {
+export default function CallAnalyzer({ onAlert, authToken }) {
   const [formData, setFormData] = useState({
     callerId: '',
     phoneNumber: '',
@@ -24,13 +24,12 @@ export default function CallAnalyzer({ onAlert }) {
     setResult(null);
 
     try {
-      const userId = localStorage.getItem('userId');
       const response = await axios.post('/api/call/analyze', {
         ...formData,
         callDurationSeconds: parseInt(formData.callDurationSeconds),
       }, {
         headers: {
-          'X-User-Id': userId,
+          Authorization: `Bearer ${authToken}`,
         },
       });
 

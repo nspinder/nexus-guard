@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail, AlertTriangle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
-export default function EmailAnalyzer({ onAlert }) {
+export default function EmailAnalyzer({ onAlert, authToken }) {
   const [formData, setFormData] = useState({
     sender: '',
     subject: '',
@@ -24,10 +24,9 @@ export default function EmailAnalyzer({ onAlert }) {
     setResult(null);
 
     try {
-      const userId = localStorage.getItem('userId');
       const response = await axios.post('/api/email/analyze', formData, {
         headers: {
-          'X-User-Id': userId,
+          Authorization: `Bearer ${authToken}`,
         },
       });
 

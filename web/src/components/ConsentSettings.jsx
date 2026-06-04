@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Settings, CheckCircle } from 'lucide-react';
 
-export default function ConsentSettings() {
+export default function ConsentSettings({ authToken }) {
   const [emailConsent, setEmailConsent] = useState(false);
   const [callConsent, setCallConsent] = useState(false);
   const [dataRetention, setDataRetention] = useState(90);
@@ -18,15 +18,27 @@ export default function ConsentSettings() {
     }
   }, []);
 
-  const handleSave = () => {
-    const consent = {
-      email: emailConsent,
-      call: callConsent,
-      retention: dataRetention,
-    };
-    localStorage.setItem('userConsent', JSON.stringify(consent));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/auth/consent', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          emailConsent,
+          callConsent,
+        }),
+      });
+
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      }
+    } catch (error) {
+      console.error('Failed to save consent:', error);
+    }
   };
 
   return (

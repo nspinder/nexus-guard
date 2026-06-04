@@ -1,24 +1,36 @@
+import { verifyAuth } from '@clerk/backend';
+
 // Clerk middleware - verifies JWT from Clerk
 export const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'No authorization header' });
   }
 
   try {
-    // For now, we'll use a placeholder verification
-    // In production, use @clerk/backend for full verification
     const token = authHeader.replace('Bearer ', '');
+    const clerkSecretKey = process.env.CLERK_SECRET_KEY;
 
-    // Placeholder: In production, verify with Clerk's verifyToken()
-    // For MVP, we'll extract userId from token or session
+    if (!clerkSecretKey) {
+      console.error('CLERK_SECRET_KEY not configured');
+      return res.status(500).json({ error: 'Auth configuration error' });
+    }
+
+    // Verify the token with Clerk
+    const auth = await verifyAuth({
+      token,
+      secretKey: clerkSecretKey,
+    });
+
     req.auth = {
-      userId: req.headers['x-user-id'] || 'test-user',
+      userId: auth.claims.sub, // Clerk user ID
+      email: auth.claims.email,
     };
 
     next();
   } catch (error) {
+    console.error('Auth verification error:', error.message);
     res.status(401).json({ error: 'Unauthorized' });
   }
 };
