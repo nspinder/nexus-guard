@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  clerkId               String   @unique
+  email                 String   @unique
+  subscriptionTier      String   @default("free") // free | pro | enterprise
+  emailConsent          Boolean  @default(false)
+  callConsent           Boolean  @default(false)
+  dataRetentionDays     Int      @default(90)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  emails                Email[]
+  callLogs              CallLog[]
+  alerts                Alert[]
+  auditLogs             AuditLog[]
+}
+
+model Email {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sender                String
+  subject               String
+  bodyPreview           String   @db.Text
+  rawEmail              String?  @db.Text // encrypted, optional
+
+  scamScore             Float?
+  claudeReasoning       String?  @db.Text
+  alertSent             Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId])
+}
+
+model CallLog {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  callerId              String?
+  phoneNumber           String
+  callDurationSeconds   Int?
+
+  scamScore             Float?
+  claudeReasoning       String?  @db.Text
+  alertSent             Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId])
+}
+
+model Alert {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type                  String   // email | call
+  entityId              String   // email_id or call_log_id
+  scamScore             Float
+
+  alertSentAt           DateTime @default(now())
+  userAcknowledged      Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId])
+}
+
+model AuditLog {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action                String
+  resourceType          String
+
+  createdAt             DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId])
+}

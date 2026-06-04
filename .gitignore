@@ -1,0 +1,39 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules
+*/node_modules
+
+# Build outputs
+dist
+build
+.next
+out
+*/dist
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Temporary
+.tmp
+.temp
+temp
+
+# Database
+*.db
+*.sqlite
+.prisma/dev.db
