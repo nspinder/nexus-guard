@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Phone, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
+import { notifyScamDetected } from '../services/notifications';
 
 export default function CallAnalyzer({ onAlert, authToken }) {
   const [formData, setFormData] = useState({
@@ -35,11 +36,20 @@ export default function CallAnalyzer({ onAlert, authToken }) {
 
       setResult(response.data);
       if (response.data.analysis.probability > 75) {
-        onAlert({
+        const alertData = {
           type: 'call',
           phoneNumber: formData.phoneNumber,
           probability: response.data.analysis.probability,
           timestamp: new Date(),
+        };
+
+        onAlert(alertData);
+
+        // Send browser notification
+        notifyScamDetected({
+          type: 'call',
+          probability: response.data.analysis.probability,
+          phoneNumber: formData.phoneNumber,
         });
       }
 

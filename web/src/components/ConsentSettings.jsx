@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Settings, CheckCircle } from 'lucide-react';
 import GmailIntegration from './GmailIntegration';
 import OutlookIntegration from './OutlookIntegration';
+import NotificationSettings from './NotificationSettings';
 
 export default function ConsentSettings({ authToken }) {
   const [emailConsent, setEmailConsent] = useState(false);
@@ -163,6 +164,11 @@ export default function ConsentSettings({ authToken }) {
 
         <GmailIntegration authToken={authToken} />
         <OutlookIntegration authToken={authToken} />
+      </div>
+
+      {/* Notification Settings */}
+      <div className="mt-8">
+        <NotificationSettings />
       </div>
 
       {/* Compliance Info */}

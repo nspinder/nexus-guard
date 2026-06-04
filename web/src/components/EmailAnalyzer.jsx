@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Mail, AlertTriangle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 import UpgradePrompt from './UpgradePrompt';
+import { notifyScamDetected } from '../services/notifications';
 
 export default function EmailAnalyzer({ onAlert, authToken }) {
   const [formData, setFormData] = useState({
@@ -43,11 +44,20 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
       }
 
       if (response.data.analysis.probability > 70) {
-        onAlert({
+        const alertData = {
           type: 'email',
           sender: formData.sender,
           probability: response.data.analysis.probability,
           timestamp: new Date(),
+        };
+
+        onAlert(alertData);
+
+        // Send browser notification
+        notifyScamDetected({
+          type: 'email',
+          probability: response.data.analysis.probability,
+          sender: formData.sender,
         });
       }
 
