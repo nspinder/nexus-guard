@@ -25,12 +25,17 @@ export default function CallAnalyzer({ onAlert, authToken }) {
     setResult(null);
 
     try {
+      const userId = localStorage.getItem('userId') || 'unknown';
+      const userEmail = localStorage.getItem('userEmail') || '';
+
       const response = await axios.post('/api/call/analyze', {
         ...formData,
         callDurationSeconds: parseInt(formData.callDurationSeconds),
       }, {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
       });
 

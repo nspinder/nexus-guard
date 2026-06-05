@@ -1,5 +1,4 @@
 import { google } from 'googleapis';
-import { simpleParser } from 'mailparser';
 
 const gmail = google.gmail('v1');
 

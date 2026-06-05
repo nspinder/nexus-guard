@@ -14,11 +14,13 @@ export default function Dashboard({ user, authToken }) {
 
   // Sync user on mount
   useEffect(() => {
-    if (authToken) {
+    if (authToken && user?.id) {
       fetch('/api/auth/sync', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': user.id,
+          'X-User-Email': user.primaryEmailAddress?.emailAddress,
           'Content-Type': 'application/json',
         },
       }).catch(console.error);
@@ -27,6 +29,8 @@ export default function Dashboard({ user, authToken }) {
       fetch('/api/auth/me', {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': user.id,
+          'X-User-Email': user.primaryEmailAddress?.emailAddress,
         },
       })
         .then((res) => res.json())

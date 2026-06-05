@@ -15,6 +15,9 @@ function AppContent() {
   // Get auth token when user logs in
   if (user && !authToken) {
     getToken().then(setAuthToken);
+    // Store user info in localStorage for API requests
+    localStorage.setItem('userId', user.id);
+    localStorage.setItem('userEmail', user.primaryEmailAddress?.emailAddress || '');
   }
 
   return (
