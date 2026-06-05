@@ -16,11 +16,21 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
   }
 
   try {
-    const user = await req.app.locals.prisma.user.findUnique({
+    // Get or create user
+    let user = await req.app.locals.prisma.user.findFirst({
       where: { clerkId: userId },
     });
 
-    if (!user || !user.emailConsent) {
+    if (!user) {
+      user = await req.app.locals.prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: req.auth.email || `user-${userId}@test.local`,
+        },
+      });
+    }
+
+    if (!user.emailConsent) {
       return res.status(403).json({ error: 'Email analysis not consented' });
     }
 

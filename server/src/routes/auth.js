@@ -3,22 +3,45 @@ import { verifyToken } from '../middleware/clerk.js';
 
 export const authRouter = express.Router();
 
-// Sync/create user from Clerk on first login
+// Helper function to get or create user
+async function getOrCreateUser(userId, email, prisma) {
+  try {
+    // Try to find by userId first (our test ID format)
+    let user = await prisma.user.findFirst({
+      where: { clerkId: userId },
+    });
+
+    // If not found, try to find by email
+    if (!user && email) {
+      user = await prisma.user.findUnique({
+        where: { email },
+      });
+    }
+
+    // If still not found, create new user
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: email || `user-${userId}@test.local`,
+        },
+      });
+      console.log(`✓ Created new user: ${user.id}`);
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Get or create user error:', error);
+    throw error;
+  }
+}
+
+// Sync/create user on first login
 authRouter.post('/sync', verifyToken, async (req, res) => {
   const { userId, email } = req.auth;
 
   try {
-    const user = await req.app.locals.prisma.user.upsert({
-      where: { clerkId: userId },
-      update: {
-        email, // Update email in case it changed
-      },
-      create: {
-        clerkId: userId,
-        email,
-      },
-    });
-
+    const user = await getOrCreateUser(userId, email, req.app.locals.prisma);
     res.json({ user });
   } catch (error) {
     console.error('Sync error:', error);
@@ -28,22 +51,10 @@ authRouter.post('/sync', verifyToken, async (req, res) => {
 
 // Get current user
 authRouter.get('/me', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
 
   try {
-    let user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
-
-    // If user doesn't exist in our DB, create them
-    if (!user) {
-      user = await req.app.locals.prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: req.auth.email,
-        },
-      });
-    }
+    const user = await getOrCreateUser(userId, email, req.app.locals.prisma);
 
     // Get usage stats
     const emailCount = await req.app.locals.prisma.email.count({
@@ -69,24 +80,13 @@ authRouter.get('/me', verifyToken, async (req, res) => {
 
 // Update consent
 authRouter.patch('/consent', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
   const { emailConsent, callConsent } = req.body;
 
   try {
-    let user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
+    const user = await getOrCreateUser(userId, email, req.app.locals.prisma);
 
-    if (!user) {
-      user = await req.app.locals.prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: req.auth.email,
-        },
-      });
-    }
-
-    user = await req.app.locals.prisma.user.update({
+    const updatedUser = await req.app.locals.prisma.user.update({
       where: { id: user.id },
       data: {
         emailConsent: emailConsent !== undefined ? emailConsent : user.emailConsent,
@@ -103,7 +103,7 @@ authRouter.patch('/consent', verifyToken, async (req, res) => {
       },
     });
 
-    res.json({ user });
+    res.json({ user: updatedUser });
   } catch (error) {
     console.error('Consent update error:', error);
     res.status(500).json({ error: error.message });

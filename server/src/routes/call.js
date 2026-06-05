@@ -15,11 +15,21 @@ callRouter.post('/analyze', verifyToken, async (req, res) => {
   }
 
   try {
-    const user = await req.app.locals.prisma.user.findUnique({
+    // Get or create user
+    let user = await req.app.locals.prisma.user.findFirst({
       where: { clerkId: userId },
     });
 
-    if (!user || !user.callConsent) {
+    if (!user) {
+      user = await req.app.locals.prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: req.auth.email || `user-${userId}@test.local`,
+        },
+      });
+    }
+
+    if (!user.callConsent) {
       return res.status(403).json({ error: 'Call analysis not consented' });
     }
 
