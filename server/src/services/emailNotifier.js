@@ -1,13 +1,18 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
+
+// Initialize Resend only if API key is provided
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'alerts@nexusguard.com';
 
 export async function sendScamAlertEmail(userEmail, scamData) {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('RESEND_API_KEY not configured, skipping email notification');
+    if (!resend || !process.env.RESEND_API_KEY) {
+      console.warn('Resend not configured, skipping email notification');
       return { success: false, reason: 'No API key' };
     }
 
