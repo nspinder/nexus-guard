@@ -1,10 +1,41 @@
-import { SignIn } from '@clerk/react';
-import { Shield } from 'lucide-react';
+import { useState } from 'react';
+import { Shield, AlertCircle } from 'lucide-react';
 
-export default function Login() {
+export default function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      if (!email || !password) {
+        setError('Please fill in all fields');
+        setLoading(false);
+        return;
+      }
+
+      // For MVP/testing, create a simple token
+      const token = btoa(`${email}:${password}`);
+
+      onLogin({
+        id: `user-${Date.now()}`,
+        email,
+      }, token);
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -16,23 +47,54 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Clerk Sign-In Component */}
-        <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-8">
-          <SignIn
-            appearance={{
-              elements: {
-                rootBox: 'w-full',
-                card: 'bg-transparent border-0 shadow-none',
-                headerTitle: 'text-white text-xl font-bold',
-                headerSubtitle: 'text-slate-400 text-sm',
-                socialButtonsBlockButton: 'bg-slate-700 hover:bg-slate-600 text-white border-slate-600',
-                formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white',
-                formFieldInput: 'bg-slate-700/50 border-slate-600 text-white',
-                footerActionLink: 'text-blue-400 hover:text-blue-300',
-              },
-            }}
-            redirectUrl="/dashboard"
-          />
+        {/* Login Card */}
+        <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-8 space-y-6">
+          {error && (
+            <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-300">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white font-medium rounded-lg transition duration-200"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          <div className="text-center text-sm text-slate-400">
+            <p>Use any email and password to test</p>
+          </div>
         </div>
 
         {/* Features */}
