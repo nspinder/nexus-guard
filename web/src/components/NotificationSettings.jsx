@@ -39,18 +39,18 @@ export default function NotificationSettings() {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-6 space-y-4">
+    <div className="bg-white/50 backdrop-blur border border-e2e8f0 rounded-lg p-6 space-y-4">
       <div className="flex items-start gap-3">
         <Bell className="w-6 h-6 text-blue-400 mt-1" />
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-white mb-1">Browser Notifications</h3>
-          <p className="text-slate-400 text-sm">
+          <p className="text-475569 text-sm">
             Get instant alerts when potential scams are detected
           </p>
         </div>
       </div>
 
-      <div className="border-t border-slate-700 pt-4">
+      <div className="border-t border-e2e8f0 pt-4">
         {notificationsEnabled ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
@@ -58,31 +58,31 @@ export default function NotificationSettings() {
               <span className="text-green-300">Notifications enabled</span>
             </div>
 
-            <p className="text-slate-400 text-sm">
+            <p className="text-475569 text-sm">
               You'll receive notifications when emails or calls are detected as potential scams.
             </p>
 
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-3 bg-slate-700/30 border border-slate-600 rounded">
-                <p className="text-slate-300 mb-1">High Risk (&gt;80%)</p>
-                <p className="text-slate-400">Requires action</p>
+              <div className="p-3 bg-f1f5f9/30 border border-cbd5e1 rounded">
+                <p className="text-475569 mb-1">High Risk (&gt;80%)</p>
+                <p className="text-475569">Requires action</p>
               </div>
-              <div className="p-3 bg-slate-700/30 border border-slate-600 rounded">
-                <p className="text-slate-300 mb-1">Medium Risk (50-80%)</p>
-                <p className="text-slate-400">Regular notification</p>
+              <div className="p-3 bg-f1f5f9/30 border border-cbd5e1 rounded">
+                <p className="text-475569 mb-1">Medium Risk (50-80%)</p>
+                <p className="text-475569">Regular notification</p>
               </div>
             </div>
 
             <button
               onClick={handleDisableNotifications}
-              className="w-full px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition text-sm"
+              className="w-full px-4 py-2 text-475569 hover:text-white hover:bg-f1f5f9 rounded-lg transition text-sm"
             >
               Disable Notifications
             </button>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-slate-400 text-sm">
+            <p className="text-475569 text-sm">
               Enable browser notifications to receive instant alerts when scams are detected.
             </p>
 

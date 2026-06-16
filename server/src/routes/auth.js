@@ -6,27 +6,27 @@ export const authRouter = express.Router();
 // Helper function to get or create user
 async function getOrCreateUser(userId, email, prisma) {
   try {
-    // Try to find by userId first (our test ID format)
-    let user = await prisma.user.findFirst({
-      where: { clerkId: userId },
+    const userEmail = email || `user-${userId}@test.local`;
+
+    // Try to find by email first (most reliable for MVP)
+    let user = await prisma.user.findUnique({
+      where: { email: userEmail },
     });
 
-    // If not found, try to find by email
-    if (!user && email) {
-      user = await prisma.user.findUnique({
-        where: { email },
-      });
-    }
-
-    // If still not found, create new user
+    // If not found, create new user
     if (!user) {
       user = await prisma.user.create({
         data: {
           clerkId: userId,
-          email: email || `user-${userId}@test.local`,
+          email: userEmail,
         },
       });
-      console.log(`✓ Created new user: ${user.id}`);
+    } else if (user.clerkId !== userId) {
+      // Update clerkId if it changed (e.g., different test session)
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { clerkId: userId },
+      });
     }
 
     return user;

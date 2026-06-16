@@ -1,0 +1,120 @@
+/* NexusGuard Badge Styling */
+.nexus-guard-badge {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.nexus-guard-badge:hover {
+  transform: scale(1.1);
+}
+
+.nexus-danger {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+}
+
+.nexus-warning {
+  background: rgba(249, 115, 22, 0.2);
+  border: 1px solid #f97316;
+}
+
+/* Modal Styling */
+.nexus-guard-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.nexus-guard-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.modal-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.modal-body {
+  padding: 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+.modal-body p {
+  margin: 12px 0;
+}
+
+.modal-body code {
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
+  font-size: 12px;
+}
+
+.modal-body ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.modal-body li {
+  margin: 6px 0;
+  color: #ef4444;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #e0e0e0;
+  background: #f9f9f9;
+  border-radius: 0 0 12px 12px;
+}

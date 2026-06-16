@@ -71,7 +71,7 @@ export default function CallAnalyzer({ onAlert, authToken }) {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-8">
+    <div className="bg-white/50 backdrop-blur border border-e2e8f0 rounded-lg p-8">
       <div className="flex items-center gap-3 mb-6">
         <Phone className="w-6 h-6 text-blue-400" />
         <h2 className="text-2xl font-bold text-white">Call Scam Analyzer</h2>
@@ -79,7 +79,7 @@ export default function CallAnalyzer({ onAlert, authToken }) {
 
       <form onSubmit={handleSubmit} className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             Caller ID (Optional)
           </label>
           <input
@@ -88,12 +88,12 @@ export default function CallAnalyzer({ onAlert, authToken }) {
             value={formData.callerId}
             onChange={handleChange}
             placeholder="What the caller claimed"
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             Phone Number
           </label>
           <input
@@ -103,12 +103,12 @@ export default function CallAnalyzer({ onAlert, authToken }) {
             onChange={handleChange}
             placeholder="+1 (555) 123-4567"
             required
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             Call Duration (seconds)
           </label>
           <input
@@ -118,7 +118,7 @@ export default function CallAnalyzer({ onAlert, authToken }) {
             onChange={handleChange}
             min="0"
             max="3600"
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
@@ -139,13 +139,13 @@ export default function CallAnalyzer({ onAlert, authToken }) {
 
       {result && (
         <div className="space-y-4">
-          <div className="border-t border-slate-700 pt-6">
+          <div className="border-t border-e2e8f0 pt-6">
             <h3 className="text-lg font-semibold text-white mb-4">Analysis Result</h3>
 
             {/* Scam Score */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-4">
-                <p className="text-slate-400 text-sm mb-2">Scam Probability</p>
+              <div className="bg-f1f5f9/30 border border-cbd5e1 rounded-lg p-4">
+                <p className="text-475569 text-sm mb-2">Scam Probability</p>
                 <div className="flex items-baseline gap-2">
                   <span className={`text-3xl font-bold ${
                     result.analysis.probability > 75 ? 'text-red-400' : 'text-green-400'
@@ -155,8 +155,8 @@ export default function CallAnalyzer({ onAlert, authToken }) {
                 </div>
               </div>
 
-              <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-4">
-                <p className="text-slate-400 text-sm mb-2">Risk Level</p>
+              <div className="bg-f1f5f9/30 border border-cbd5e1 rounded-lg p-4">
+                <p className="text-475569 text-sm mb-2">Risk Level</p>
                 <div className={`text-2xl font-bold ${
                   result.analysis.risk === 'high' ? 'text-red-400' :
                   result.analysis.risk === 'medium' ? 'text-yellow-400' :
@@ -176,7 +176,7 @@ export default function CallAnalyzer({ onAlert, authToken }) {
                 </h4>
                 <ul className="space-y-2">
                   {result.analysis.flags.map((flag, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
+                    <li key={idx} className="flex items-start gap-2 text-475569 text-sm">
                       <span className="text-red-400 mt-1">•</span>
                       <span>{flag}</span>
                     </li>
@@ -188,7 +188,7 @@ export default function CallAnalyzer({ onAlert, authToken }) {
             {/* Reasoning */}
             <div>
               <h4 className="text-white font-medium mb-2">Analysis Details</h4>
-              <p className="text-slate-300 text-sm">{result.analysis.reasoning}</p>
+              <p className="text-475569 text-sm">{result.analysis.reasoning}</p>
             </div>
           </div>
         </div>

@@ -95,7 +95,7 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
     <div className="space-y-12 py-8">
       <div className="text-center">
         <h2 className="text-4xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
-        <p className="text-slate-400 text-lg">Choose the perfect plan for your needs</p>
+        <p className="text-475569 text-lg">Choose the perfect plan for your needs</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
@@ -105,7 +105,7 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
             className={`rounded-lg overflow-hidden transition transform hover:scale-105 ${
               plan.highlighted
                 ? 'bg-gradient-to-br from-blue-500 to-blue-600 border-2 border-blue-400 ring-2 ring-blue-500/30'
-                : 'bg-slate-800/50 border border-slate-700'
+                : 'bg-white/50 border border-e2e8f0'
             }`}
           >
             {plan.highlighted && (
@@ -121,7 +121,7 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
                 }`}>
                   {plan.name}
                 </h3>
-                <p className={plan.highlighted ? 'text-blue-100' : 'text-slate-400'}>
+                <p className={plan.highlighted ? 'text-blue-100' : 'text-475569'}>
                   {plan.description}
                 </p>
               </div>
@@ -131,10 +131,10 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
                   plan.highlighted ? 'text-white' : 'text-white'
                 }`}>
                   {plan.price}
-                  <span className="text-lg text-slate-400">/month</span>
+                  <span className="text-lg text-475569">/month</span>
                 </div>
                 <p className={`text-sm ${
-                  plan.highlighted ? 'text-blue-100' : 'text-slate-400'
+                  plan.highlighted ? 'text-blue-100' : 'text-475569'
                 }`}>
                   {plan.monthlyEmails} emails/month
                 </p>
@@ -148,23 +148,23 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
                 }
                 className={`w-full py-2 rounded-lg font-medium transition ${
                   currentTier === plan.tier && plan.tier !== 'free'
-                    ? 'bg-slate-700 text-slate-400 cursor-default'
+                    ? 'bg-f1f5f9 text-475569 cursor-default'
                     : plan.highlighted
                     ? 'bg-white text-blue-600 hover:bg-blue-50'
-                    : 'bg-slate-700 text-white hover:bg-slate-600'
+                    : 'bg-f1f5f9 text-white hover:bg-slate-600'
                 } ${loading === plan.tier ? 'opacity-75' : ''}`}
               >
                 {loading === plan.tier ? 'Loading...' : plan.cta}
               </button>
 
-              <div className="border-t border-slate-600 pt-6">
+              <div className="border-t border-cbd5e1 pt-6">
                 <ul className="space-y-3">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3">
                       <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
                         plan.highlighted ? 'text-white' : 'text-blue-400'
                       }`} />
-                      <span className={plan.highlighted ? 'text-white' : 'text-slate-300'}>
+                      <span className={plan.highlighted ? 'text-white' : 'text-475569'}>
                         {feature}
                       </span>
                     </li>
@@ -177,7 +177,7 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
       </div>
 
       <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6 text-center">
-        <p className="text-slate-400">
+        <p className="text-475569">
           All plans include 30-day money-back guarantee and cancel anytime.
         </p>
       </div>

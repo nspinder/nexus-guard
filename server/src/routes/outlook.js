@@ -44,11 +44,13 @@ outlookRouter.get('/callback', async (req, res) => {
 
     const userEmail = await handleOutlookCallback(code, userId, req.app.locals.prisma);
 
-    // Redirect to dashboard with success message
-    res.redirect(`/dashboard?outlook=connected&email=${encodeURIComponent(userEmail)}`);
+    // Redirect to frontend dashboard with success message
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/dashboard?outlook=connected&email=${encodeURIComponent(userEmail)}`);
   } catch (error) {
     console.error('Outlook callback error:', error);
-    res.redirect(`/dashboard?outlook=error&message=${encodeURIComponent(error.message)}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/dashboard?outlook=error&message=${encodeURIComponent(error.message)}`);
   }
 });
 

@@ -87,3 +87,80 @@ Respond in JSON format only:
     };
   }
 }
+
+export async function analyzeMessageForScam(anthropic, message) {
+  const prompt = `You are a scam detection expert. Your job is to identify ACTUAL SCAMS and FRAUD attempts, NOT just spam or marketing messages.
+
+A SCAM typically involves:
+- Phishing attempts (fake links, credential theft)
+- Financial fraud (money transfers, fake payments)
+- Identity theft (personal info requests)
+- Impersonation (pretending to be authority/company)
+- Malware/dangerous links
+- Romance/investment scams
+
+Do NOT flag:
+- Regular marketing messages
+- Legitimate business promotions
+- Normal conversation
+- Casual greetings or jokes
+- Standard customer service
+
+Analyze this WhatsApp message:
+From: ${message.sender}
+Message: ${message.messageText}
+
+Respond ONLY with valid JSON (no markdown, no extra text):
+{
+  "probability": <0-100, where 70+ is high risk fraud>,
+  "flags": [<specific red flags found, or empty array>],
+  "risk": "<low|medium|high>",
+  "reasoning": "<brief explanation of why this is or isn't a scam>"
+}`;
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-opus-4-7',
+      max_tokens: 300,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    });
+
+    const responseText = response.content[0].text.trim();
+
+    // Handle cases where response might have markdown code blocks
+    let jsonText = responseText;
+    if (responseText.includes('```json')) {
+      jsonText = responseText.split('```json')[1].split('```')[0];
+    } else if (responseText.includes('```')) {
+      jsonText = responseText.split('```')[1].split('```')[0];
+    }
+
+    const analysis = JSON.parse(jsonText.trim());
+
+    // Validate the response
+    if (typeof analysis.probability !== 'number' || analysis.probability < 0 || analysis.probability > 100) {
+      analysis.probability = 0;
+    }
+    if (!['low', 'medium', 'high'].includes(analysis.risk)) {
+      analysis.risk = 'low';
+    }
+    if (!Array.isArray(analysis.flags)) {
+      analysis.flags = [];
+    }
+
+    return analysis;
+  } catch (error) {
+    console.error('Claude API error:', error);
+    return {
+      probability: 0,
+      flags: [],
+      risk: 'low',
+      reasoning: 'Analysis unavailable',
+    };
+  }
+}

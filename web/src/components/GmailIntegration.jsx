@@ -28,9 +28,13 @@ export default function GmailIntegration({ authToken }) {
 
   const checkGmailStatus = async () => {
     try {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
       const response = await fetch('/api/email/gmail/status', {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
       });
       const data = await response.json();
@@ -44,9 +48,13 @@ export default function GmailIntegration({ authToken }) {
   const handleConnect = async () => {
     setLoading(true);
     try {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
       const response = await fetch('/api/email/gmail/auth-url', {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
       });
       const data = await response.json();
@@ -62,11 +70,15 @@ export default function GmailIntegration({ authToken }) {
   const handleManualSync = async () => {
     setSyncing(true);
     try {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
       const response = await fetch('/api/email/gmail/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
         body: JSON.stringify({ daysBack: 30 }),
       });
@@ -84,10 +96,14 @@ export default function GmailIntegration({ authToken }) {
     if (!window.confirm('Disconnect Gmail? You can reconnect anytime.')) return;
 
     try {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
       const response = await fetch('/api/email/gmail/disconnect', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
       });
       if (response.ok) {
@@ -101,18 +117,18 @@ export default function GmailIntegration({ authToken }) {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-6">
+    <div className="bg-white/50 backdrop-blur border border-e2e8f0 rounded-lg p-6">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <Mail className="w-6 h-6 text-blue-400" />
           <div>
             <h3 className="text-lg font-semibold text-white">Gmail Integration</h3>
-            <p className="text-slate-400 text-sm">Automatically sync emails from Gmail</p>
+            <p className="text-475569 text-sm">Automatically sync emails from Gmail</p>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-slate-700 pt-4 mt-4">
+      <div className="border-t border-e2e8f0 pt-4 mt-4">
         {gmailConnected ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
@@ -133,7 +149,7 @@ export default function GmailIntegration({ authToken }) {
               </button>
               <button
                 onClick={handleDisconnect}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition text-sm flex items-center justify-center gap-2"
+                className="px-4 py-2 bg-f1f5f9 hover:bg-slate-600 text-white rounded-lg transition text-sm flex items-center justify-center gap-2"
               >
                 <Unlink className="w-4 h-4" />
                 Disconnect
@@ -147,7 +163,7 @@ export default function GmailIntegration({ authToken }) {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-slate-400 text-sm">
+            <p className="text-475569 text-sm">
               Connect your Gmail account to automatically sync and analyze incoming emails for scams.
             </p>
 
@@ -160,9 +176,9 @@ export default function GmailIntegration({ authToken }) {
               {loading ? 'Redirecting to Google...' : 'Connect Gmail'}
             </button>
 
-            <div className="p-4 bg-slate-700/50 border border-slate-600 rounded-lg">
-              <p className="text-slate-300 text-sm mb-2 font-medium">What we access:</p>
-              <ul className="text-slate-400 text-sm space-y-1">
+            <div className="p-4 bg-f1f5f9/50 border border-cbd5e1 rounded-lg">
+              <p className="text-475569 text-sm mb-2 font-medium">What we access:</p>
+              <ul className="text-475569 text-sm space-y-1">
                 <li>• Read emails from your inbox</li>
                 <li>• Analyze sender, subject, and content</li>
                 <li>• Store scam scores in NexusGuard</li>

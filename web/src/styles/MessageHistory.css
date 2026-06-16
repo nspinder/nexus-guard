@@ -1,0 +1,147 @@
+.message-history {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-history h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.message-history.error {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 40px 20px;
+  font-size: 14px;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.message-item:hover {
+  border-color: #007bff;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.message-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sender {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 15px;
+}
+
+.date {
+  color: #999;
+  font-size: 13px;
+}
+
+.score-badge {
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 45px;
+  text-align: center;
+}
+
+.message-text {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+  word-break: break-word;
+}
+
+.reasoning {
+  color: #666;
+  font-size: 13px;
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 8px;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background: #f0f0f0;
+  color: #dc2626;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.url-indicator {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.message-details {
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 12px;
+}
+
+.message-details .message-text {
+  margin-bottom: 12px;
+}

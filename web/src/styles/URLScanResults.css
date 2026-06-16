@@ -1,0 +1,135 @@
+.url-scan-results {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.url-scan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.url-scan-header h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #60a5fa;
+}
+
+.malicious-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.urls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.url-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid;
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.url-item.safe {
+  border-left-color: #22c55e;
+}
+
+.url-item.malicious {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.url-icon {
+  font-size: 20px;
+  min-width: 30px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.url-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.url-address {
+  margin-bottom: 8px;
+}
+
+.url-link {
+  color: #60a5fa;
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.url-link:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.url-threats {
+  background: rgba(239, 68, 68, 0.15);
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #fca5a5;
+}
+
+.threat-sources {
+  margin-top: 4px;
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.threat-list {
+  margin-top: 6px;
+  border-top: 1px solid rgba(239, 68, 68, 0.3);
+  padding-top: 6px;
+}
+
+.threat-item {
+  margin: 2px 0;
+  font-size: 11px;
+}
+
+.url-warnings {
+  background: rgba(249, 115, 22, 0.15);
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 3px solid #f97316;
+}
+
+.warning-item {
+  font-size: 12px;
+  color: #fed7aa;
+  margin: 4px 0;
+}
+
+.url-scan-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.url-warning-text {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin: 0;
+  font-style: italic;
+}

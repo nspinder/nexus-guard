@@ -89,7 +89,7 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-8">
+    <div className="bg-white/50 backdrop-blur border border-e2e8f0 rounded-lg p-8">
       <div className="flex items-center gap-3 mb-6">
         <Mail className="w-6 h-6 text-blue-400" />
         <h2 className="text-2xl font-bold text-white">Email Scam Analyzer</h2>
@@ -106,7 +106,7 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
 
       <form onSubmit={handleSubmit} className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             From (Sender Email)
           </label>
           <input
@@ -116,12 +116,12 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
             onChange={handleChange}
             placeholder="sender@example.com"
             required
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             Subject
           </label>
           <input
@@ -131,12 +131,12 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
             onChange={handleChange}
             placeholder="Email subject line"
             required
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-475569 mb-2">
             Email Body Preview
           </label>
           <textarea
@@ -146,7 +146,7 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
             placeholder="Paste the email content here..."
             required
             rows="6"
-            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+            className="w-full px-4 py-2 bg-f1f5f9/50 border border-cbd5e1 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
           />
         </div>
 
@@ -167,13 +167,13 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
 
       {result && (
         <div className="space-y-4">
-          <div className="border-t border-slate-700 pt-6">
+          <div className="border-t border-e2e8f0 pt-6">
             <h3 className="text-lg font-semibold text-white mb-4">Analysis Result</h3>
 
             {/* Scam Score */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-4">
-                <p className="text-slate-400 text-sm mb-2">Scam Probability</p>
+              <div className="bg-f1f5f9/30 border border-cbd5e1 rounded-lg p-4">
+                <p className="text-475569 text-sm mb-2">Scam Probability</p>
                 <div className="flex items-baseline gap-2">
                   <span className={`text-3xl font-bold ${
                     result.analysis.probability > 70 ? 'text-red-400' : 'text-green-400'
@@ -183,8 +183,8 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
                 </div>
               </div>
 
-              <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-4">
-                <p className="text-slate-400 text-sm mb-2">Risk Level</p>
+              <div className="bg-f1f5f9/30 border border-cbd5e1 rounded-lg p-4">
+                <p className="text-475569 text-sm mb-2">Risk Level</p>
                 <div className={`text-2xl font-bold ${
                   result.analysis.risk === 'high' ? 'text-red-400' :
                   result.analysis.risk === 'medium' ? 'text-yellow-400' :
@@ -204,7 +204,7 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
                 </h4>
                 <ul className="space-y-2">
                   {result.analysis.flags.map((flag, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
+                    <li key={idx} className="flex items-start gap-2 text-475569 text-sm">
                       <span className="text-red-400 mt-1">•</span>
                       <span>{flag}</span>
                     </li>
@@ -216,16 +216,16 @@ export default function EmailAnalyzer({ onAlert, authToken }) {
             {/* Reasoning */}
             <div>
               <h4 className="text-white font-medium mb-2">Analysis Details</h4>
-              <p className="text-slate-300 text-sm">{result.analysis.reasoning}</p>
+              <p className="text-475569 text-sm">{result.analysis.reasoning}</p>
             </div>
 
             {/* Usage indicator */}
             {result.monthlyUsage && monthlyLimit > 0 && (
-              <div className="border-t border-slate-700 pt-4">
-                <p className="text-slate-400 text-sm mb-2">
+              <div className="border-t border-e2e8f0 pt-4">
+                <p className="text-475569 text-sm mb-2">
                   Monthly Usage: {result.monthlyUsage.used} of {result.monthlyUsage.limit}
                 </p>
-                <div className="w-full bg-slate-700/50 rounded-full h-2">
+                <div className="w-full bg-f1f5f9/50 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full transition-all ${
                       result.monthlyUsage.used >= result.monthlyUsage.limit

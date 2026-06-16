@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGuard - WhatsApp Monitor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      padding: 16px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .alert-item {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-left: 3px solid #ef4444;
+    }
+
+    .alert-item.high {
+      border-left-color: #f97316;
+      background: rgba(249, 115, 22, 0.1);
+      border-color: rgba(249, 115, 22, 0.2);
+    }
+
+    .alert-item.medium {
+      border-left-color: #eab308;
+      background: rgba(234, 179, 8, 0.1);
+      border-color: rgba(234, 179, 8, 0.2);
+    }
+
+    .alert-sender {
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 4px;
+    }
+
+    .alert-message {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .alert-score {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .score-value {
+      font-weight: bold;
+      color: #ef4444;
+    }
+
+    .score-value.high {
+      color: #f97316;
+    }
+
+    .score-value.medium {
+      color: #eab308;
+    }
+
+    .alert-time {
+      color: #64748b;
+      font-size: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 32px 16px;
+      color: #64748b;
+    }
+
+    .empty svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-top: 1px solid #334155;
+      font-size: 12px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .status.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.5);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚨 NexusGuard Monitor</h1>
+    <p>WhatsApp Scam Detection</p>
+  </div>
+
+  <!-- Login Section -->
+  <div id="loginSection" class="content" style="display: none;">
+    <div style="padding: 16px;">
+      <h3 style="margin-bottom: 12px; color: #60a5fa;">Connect to NexusGuard</h3>
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #cbd5e1;">Email</label>
+        <input type="email" id="emailInput" placeholder="your@email.com" style="width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; color: white; box-sizing: border-box;">
+      </div>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #cbd5e1;">Password</label>
+        <input type="password" id="passwordInput" placeholder="••••••••" style="width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; color: white; box-sizing: border-box;">
+      </div>
+      <button id="loginBtn" style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Login</button>
+      <p id="loginError" style="color: #ef4444; font-size: 12px; margin-top: 8px; display: none;"></p>
+    </div>
+  </div>
+
+  <div class="content" id="alertsList">
+    <div class="empty">
+      <p>👂 Monitoring WhatsApp...</p>
+      <p style="font-size: 11px; margin-top: 8px;">Suspicious messages will appear here</p>
+    </div>
+  </div>
+
+  <div style="padding: 12px; border-top: 1px solid #334155; display: flex; gap: 8px;">
+    <button id="scanThisChatBtn" style="flex: 1; padding: 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500;">Scan This Chat</button>
+    <button id="scanAllChatsBtn" style="flex: 1; padding: 8px; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500;">Scan All</button>
+  </div>
+
+  <div id="scanProgress" style="padding: 12px; text-align: center; font-size: 12px; color: #60a5fa; display: none; border-top: 1px solid #334155;">
+    <div style="margin-bottom: 8px;">🔍 Scanning...</div>
+    <div id="scanProgressText" style="color: #64748b; font-size: 11px;"></div>
+  </div>
+
+  <div class="status active">
+    ✓ Monitoring active on WhatsApp Web
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

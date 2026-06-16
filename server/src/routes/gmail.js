@@ -35,6 +35,8 @@ gmailRouter.get('/auth-url', verifyToken, async (req, res) => {
 gmailRouter.get('/callback', async (req, res) => {
   const { code, state } = req.query;
 
+  console.log('Gmail callback received:', { code: code ? 'present' : 'missing', state });
+
   if (!code || !state) {
     return res.status(400).json({ error: 'Missing code or state' });
   }
@@ -43,12 +45,19 @@ gmailRouter.get('/callback', async (req, res) => {
     const userId = state; // userId was passed as state
 
     const userEmail = await handleGmailCallback(code, userId, req.app.locals.prisma);
+    console.log('Gmail callback success for user:', userId, 'email:', userEmail);
 
-    // Redirect to dashboard with success message
-    res.redirect(`/dashboard?gmail=connected&email=${encodeURIComponent(userEmail)}`);
+    // Redirect to frontend dashboard with success message
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const redirectUrl = `${frontendUrl}/dashboard?gmail=connected&email=${encodeURIComponent(userEmail)}`;
+    console.log('Redirecting to:', redirectUrl);
+    res.redirect(redirectUrl);
   } catch (error) {
     console.error('Gmail callback error:', error);
-    res.redirect(`/dashboard?gmail=error&message=${encodeURIComponent(error.message)}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const redirectUrl = `${frontendUrl}/dashboard?gmail=error&message=${encodeURIComponent(error.message)}`;
+    console.log('Error redirect to:', redirectUrl);
+    res.redirect(redirectUrl);
   }
 });
 

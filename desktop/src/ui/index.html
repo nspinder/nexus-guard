@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGuard Desktop - Call Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📞 NexusGuard Call Monitor</h1>
+      <p>WhatsApp Call Analysis for macOS</p>
+    </div>
+
+    <div class="status-section">
+      <div class="status-indicator" id="statusIndicator">
+        <span class="status-dot"></span>
+        <span id="statusText">Inactive</span>
+      </div>
+      <button id="toggleBtn" class="btn btn-primary">Start Monitoring</button>
+    </div>
+
+    <div class="info-section">
+      <h3>📊 How it Works</h3>
+      <ul class="info-list">
+        <li>Monitors WhatsApp Desktop & FaceTime calls</li>
+        <li>Monitors incoming iMessages in real-time</li>
+        <li>Detects incoming calls automatically</li>
+        <li>Records call audio (with permissions)</li>
+        <li>Transcribes the conversation</li>
+        <li>Analyzes for scam indicators</li>
+        <li>Alerts you to suspicious calls & messages</li>
+      </ul>
+    </div>
+
+    <div class="services-section">
+      <h3>📲 Monitored Services</h3>
+      <div class="service-badge whatsapp">
+        💬 WhatsApp Desktop
+      </div>
+      <div class="service-badge facetime">
+        📱 FaceTime
+      </div>
+      <div class="service-badge imessage">
+        📨 iMessage
+      </div>
+    </div>
+
+    <div class="call-info" id="callInfo" style="display: none;">
+      <h3>📱 Current Call</h3>
+      <div id="callDetails">
+        <p><strong>Caller:</strong> <span id="callerName">Unknown</span></p>
+        <p><strong>Status:</strong> <span id="callStatus">Active</span></p>
+        <p><strong>Duration:</strong> <span id="callDuration">00:00</span></p>
+      </div>
+    </div>
+
+    <div class="live-transcript" id="liveTranscript" style="display: none;">
+      <h3>📝 Live Transcription</h3>
+      <div id="transcriptText" class="transcript-content">
+        <p style="color: #64748b; font-size: 12px;">Listening...</p>
+      </div>
+    </div>
+
+    <div class="live-alert-box" id="liveAlertBox" style="display: none;">
+      <div class="alert-header">
+        <span>🚨 LIVE ALERT - Potential Scam Detected!</span>
+        <button id="hangUpBtn" class="hang-up-btn">End Call</button>
+      </div>
+      <div id="liveAlertContent" class="alert-content"></div>
+    </div>
+
+    <div class="analysis-section" id="analysisSection" style="display: none;">
+      <h3>🔍 Analysis In Progress</h3>
+      <div class="spinner"></div>
+      <p id="analysisMessage">Transcribing call...</p>
+    </div>
+
+    <div class="analysis-result" id="analysisResult" style="display: none;">
+      <h3>✓ Analysis Complete</h3>
+      <div class="result-content">
+        <p><strong>Scam Probability:</strong> <span id="probability" class="probability-value">--</span>%</p>
+        <p><strong>Risk Level:</strong> <span id="riskLevel" class="risk-value">--</span></p>
+        <div id="flags" class="flags-container"></div>
+      </div>
+    </div>
+
+    <div class="settings">
+      <h3>⚙️ Settings</h3>
+      <div class="setting-item">
+        <label for="privacyConsent">
+          <input type="checkbox" id="privacyConsent" checked>
+          I consent to audio recording for scam detection
+        </label>
+        <p class="setting-note">Audio files are encrypted and stored locally</p>
+      </div>
+      <button class="btn btn-secondary" onclick="openSettings()">Configure API Keys</button>
+      <button class="btn btn-secondary" onclick="testIMessage()" style="margin-top: 10px;">📨 Send Test iMessage</button>
+    </div>
+
+    <div class="footer">
+      <p>🔒 Privacy: All recordings are stored locally and encrypted</p>
+      <p>© 2026 NexusGuard</p>
+    </div>
+  </div>
+
+  <div id="testIMessageModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📨 Send Test iMessage</h2>
+        <button class="modal-close" onclick="closeTestModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="testSender">Sender Name or Number:</label>
+          <input type="text" id="testSender" placeholder="e.g., Mom, +1234567890" value="Test Sender">
+        </div>
+        <div class="form-group">
+          <label for="testMessage">Message Content:</label>
+          <textarea id="testMessage" placeholder="Enter the test message" rows="4">Hi, I need you to send me gift cards right now.</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTestModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitTestIMessage()">Send Test</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
