@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { colors } from '../theme/colors';
 
 export default function Pagination({
   currentPage,
@@ -9,8 +10,11 @@ export default function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between mt-6 pt-4 border-t border-e2e8f0">
-      <div className="text-sm text-slate-600">
+    <div
+      className="flex items-center justify-between mt-6 pt-4"
+      style={{ borderTop: `1px solid ${colors.border.light}` }}
+    >
+      <div style={{ fontSize: '0.875rem', color: colors.text.secondary }}>
         Page {currentPage} of {totalPages}
       </div>
 
@@ -18,7 +22,19 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1 || loading}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-e2e8f0 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            border: `1px solid ${colors.border.light}`,
+            color: colors.text.secondary,
+          }}
+          onMouseEnter={(e) => {
+            if (!(currentPage === 1 || loading)) {
+              e.currentTarget.style.backgroundColor = colors.background.secondary;
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
           aria-label="Previous page"
         >
           <ChevronLeft size={18} />
@@ -43,11 +59,34 @@ export default function Pagination({
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
                 disabled={loading}
-                className={`w-9 h-9 rounded-lg transition ${
-                  currentPage === pageNum
-                    ? 'bg-blue-500 text-white font-semibold'
-                    : 'border border-e2e8f0 hover:bg-slate-50 disabled:opacity-50'
-                }`}
+                className="w-9 h-9 rounded-lg transition disabled:opacity-50"
+                style={{
+                  backgroundColor:
+                    currentPage === pageNum
+                      ? colors.primary[500]
+                      : colors.background.primary,
+                  color:
+                    currentPage === pageNum
+                      ? colors.text.white
+                      : colors.text.primary,
+                  border:
+                    currentPage === pageNum
+                      ? `1px solid ${colors.primary[500]}`
+                      : `1px solid ${colors.border.light}`,
+                  fontWeight: currentPage === pageNum ? '600' : '400',
+                }}
+                onMouseEnter={(e) => {
+                  if (currentPage !== pageNum && !loading) {
+                    e.currentTarget.style.backgroundColor =
+                      colors.background.secondary;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    currentPage === pageNum
+                      ? colors.primary[500]
+                      : colors.background.primary;
+                }}
               >
                 {pageNum}
               </button>
@@ -58,7 +97,19 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages || loading}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-e2e8f0 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            border: `1px solid ${colors.border.light}`,
+            color: colors.text.secondary,
+          }}
+          onMouseEnter={(e) => {
+            if (!(currentPage === totalPages || loading)) {
+              e.currentTarget.style.backgroundColor = colors.background.secondary;
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
           aria-label="Next page"
         >
           Next
