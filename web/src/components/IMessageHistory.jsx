@@ -5,6 +5,7 @@ import { useURLScanning } from '../hooks/useURLScanning';
 import URLScanResults from './URLScanResults';
 import Pagination from './Pagination';
 import SearchFilter from './SearchFilter';
+import { SkeletonItem } from './SkeletonLoader';
 import '../styles/MessageHistory.css';
 
 const PAGE_SIZE = 10;
@@ -116,7 +117,11 @@ export default function IMessageHistory() {
         onRiskFilterChange={setRiskFilter}
       />
       {loading ? (
-        <p className="empty-state">Loading iMessages...</p>
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonItem key={i} />
+          ))}
+        </div>
       ) : messages.length === 0 ? (
         <p className="empty-state">No iMessages monitored yet</p>
       ) : (
