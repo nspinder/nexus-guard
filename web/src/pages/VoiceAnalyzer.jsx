@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Mic, AlertTriangle, TrendingUp, Clock, Phone, FileText } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../services/apiClient';
 import '../styles/VoiceAnalyzer.css';
 
 export default function VoiceAnalyzer() {
+  const { authToken } = useAuth();
   const [transcription, setTranscription] = useState('');
   const [callData, setCallData] = useState({
     duration: '',
@@ -22,18 +25,8 @@ export default function VoiceAnalyzer() {
 
   const loadHistory = async () => {
     try {
-      const authToken = localStorage.getItem('authToken');
-      const response = await fetch('/api/voice/history', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': localStorage.getItem('userId'),
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHistory(data.data || []);
-      }
+      const data = await apiClient.get('/api/voice/history');
+      setHistory(data.data || []);
     } catch (err) {
       console.error('Failed to load history:', err);
     }
@@ -41,18 +34,8 @@ export default function VoiceAnalyzer() {
 
   const loadStats = async () => {
     try {
-      const authToken = localStorage.getItem('authToken');
-      const response = await fetch('/api/voice/stats', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': localStorage.getItem('userId'),
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.data);
-      }
+      const data = await apiClient.get('/api/voice/stats');
+      setStats(data.data);
     } catch (err) {
       console.error('Failed to load stats:', err);
     }
@@ -68,7 +51,6 @@ export default function VoiceAnalyzer() {
       return;
     }
 
-    const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       setError('Please log in to analyze');
       return;
@@ -77,33 +59,17 @@ export default function VoiceAnalyzer() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/voice/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': localStorage.getItem('userId'),
-          'X-User-Email': localStorage.getItem('userEmail'),
-        },
-        body: JSON.stringify({
-          transcription,
-          duration: callData.duration ? parseInt(callData.duration) : null,
-          callerId: callData.callerId || null,
-          callType: callData.callType,
-        }),
+      const data = await apiClient.post('/api/voice/analyze', {
+        transcription,
+        duration: callData.duration ? parseInt(callData.duration) : null,
+        callerId: callData.callerId || null,
+        callType: callData.callType,
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setResult(data.data);
-        setTranscription('');
-        setCallData({ duration: '', callerId: '', callType: 'phone' });
-        loadHistory();
-        loadStats();
-      } else {
-        setError(data.error || 'Failed to analyze');
-      }
+      setResult(data.data);
+      setTranscription('');
+      setCallData({ duration: '', callerId: '', callType: 'phone' });
+      loadHistory();
+      loadStats();
     } catch (err) {
       setError(err.message || 'An error occurred');
     } finally {

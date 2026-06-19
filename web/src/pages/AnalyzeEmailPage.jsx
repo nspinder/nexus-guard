@@ -1,8 +1,11 @@
 import { Mail } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import EmailAnalyzer from '../components/EmailAnalyzer';
 
 export default function AnalyzeEmailPage({ user, authToken }) {
+  const { authToken: token } = useAuth();
+  const currentToken = authToken || token;
   const [alerts, setAlerts] = useState([]);
 
   const handleNewAlert = (alert) => {
@@ -19,7 +22,7 @@ export default function AnalyzeEmailPage({ user, authToken }) {
         <p className="text-slate-600">Check emails for phishing, scams, and suspicious content</p>
       </div>
 
-      <EmailAnalyzer onAlert={handleNewAlert} authToken={authToken} />
+      <EmailAnalyzer onAlert={handleNewAlert} authToken={currentToken} />
     </div>
   );
 }

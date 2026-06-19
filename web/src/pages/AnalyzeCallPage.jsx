@@ -1,8 +1,11 @@
 import { Phone } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import CallAnalyzer from '../components/CallAnalyzer';
 
 export default function AnalyzeCallPage({ user, authToken }) {
+  const { authToken: token } = useAuth();
+  const currentToken = authToken || token;
   const [alerts, setAlerts] = useState([]);
 
   const handleNewAlert = (alert) => {
@@ -19,7 +22,7 @@ export default function AnalyzeCallPage({ user, authToken }) {
         <p className="text-slate-600">Analyze phone calls for potential scams and fraud</p>
       </div>
 
-      <CallAnalyzer onAlert={handleNewAlert} authToken={authToken} />
+      <CallAnalyzer onAlert={handleNewAlert} authToken={currentToken} />
     </div>
   );
 }

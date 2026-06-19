@@ -1,7 +1,11 @@
 import { Mail, History } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import EmailHistory from '../components/EmailHistory';
 
 export default function EmailHistoryPage({ user, authToken }) {
+  const { authToken: token } = useAuth();
+  const currentToken = authToken || token;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -12,7 +16,7 @@ export default function EmailHistoryPage({ user, authToken }) {
         <p className="text-slate-600">View all analyzed emails and their results</p>
       </div>
 
-      <EmailHistory authToken={authToken} />
+      <EmailHistory authToken={currentToken} />
     </div>
   );
 }

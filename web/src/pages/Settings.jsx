@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Settings as SettingsIcon, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../services/apiClient';
 import GmailIntegration from '../components/GmailIntegration';
 import OutlookIntegration from '../components/OutlookIntegration';
 import NotificationSettings from '../components/NotificationSettings';
 import '../styles/Settings.css';
 
-export default function Settings({ authToken }) {
+export default function Settings({ authToken: propToken }) {
+  const { authToken: token } = useAuth();
+  const authToken = propToken || token;
   const [activeTab, setActiveTab] = useState('thresholds');
   const [preferences, setPreferences] = useState({
     lowRiskThreshold: 30,
@@ -24,18 +27,8 @@ export default function Settings({ authToken }) {
 
   const fetchPreferences = async () => {
     try {
-      const authToken = localStorage.getItem('authToken');
-      const userEmail = localStorage.getItem('userEmail');
-      const userId = localStorage.getItem('userId');
-
-      const response = await axios.get('/api/preferences', {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'X-User-Email': userEmail,
-          'X-User-Id': userId,
-        },
-      });
-      setPreferences(response.data);
+      const data = await apiClient.get('/api/preferences');
+      setPreferences(data);
       setError(null);
     } catch (err) {
       console.error('Failed to fetch preferences:', err);
@@ -69,22 +62,12 @@ export default function Settings({ authToken }) {
     }
 
     try {
-      const authToken = localStorage.getItem('authToken');
-      const userEmail = localStorage.getItem('userEmail');
-      const userId = localStorage.getItem('userId');
-
-      await axios.put('/api/preferences', preferences, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'X-User-Email': userEmail,
-          'X-User-Id': userId,
-        },
-      });
+      await apiClient.put('/api/preferences', preferences);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to save preferences:', err);
-      setError(err.response?.data?.error || 'Failed to save preferences');
+      setError(err.message || 'Failed to save preferences');
     } finally {
       setSaving(false);
     }

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Search, Plus } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../services/apiClient';
 import '../styles/CommunityReports.css';
 
 export default function CommunityReports() {
+  const { authToken } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -32,24 +35,11 @@ export default function CommunityReports() {
       if (filterType) params.append('type', filterType);
       params.append('limit', '50');
 
-      const response = await fetch(`/api/community/reports?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-          'X-User-Id': localStorage.getItem('userId'),
-          'X-User-Email': localStorage.getItem('userEmail'),
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setReports(data.data);
-        setUserVotes(data.userVotes || {});
-      } else {
-        setError(data.error || 'Failed to load reports');
-      }
+      const data = await apiClient.get(`/api/community/reports?${params}`);
+      setReports(data.data);
+      setUserVotes(data.userVotes || {});
     } catch (err) {
-      setError(err.message || 'An error occurred');
+      setError(err.message || 'Failed to load reports');
     } finally {
       setLoading(false);
     }
@@ -66,21 +56,10 @@ export default function CommunityReports() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `/api/community/reports/search/${encodeURIComponent(searchQuery)}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-User-Id': localStorage.getItem('userId'),
-          },
-        }
+      const data = await apiClient.get(
+        `/api/community/reports/search/${encodeURIComponent(searchQuery)}`
       );
-
-      const data = await response.json();
-
-      if (data.success) {
-        setReports(data.data);
-      }
+      setReports(data.data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -97,7 +76,6 @@ export default function CommunityReports() {
       return;
     }
 
-    const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       setError('Please log in to create a report');
       return;
@@ -106,67 +84,36 @@ export default function CommunityReports() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/community/reports', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': localStorage.getItem('userId'),
-          'X-User-Email': localStorage.getItem('userEmail'),
-        },
-        body: JSON.stringify(formData),
+      await apiClient.post('/api/community/reports', formData);
+      setFormData({
+        type: 'url',
+        target: '',
+        threatType: 'phishing',
+        description: '',
+        evidence: '',
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setFormData({
-          type: 'url',
-          target: '',
-          threatType: 'phishing',
-          description: '',
-          evidence: '',
-        });
-        setShowForm(false);
-        loadReports();
-      } else {
-        setError(data.error || 'Failed to create report');
-      }
+      setShowForm(false);
+      loadReports();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to create report');
     } finally {
       setLoading(false);
     }
   };
 
   const handleVote = async (reportId, voteType) => {
-    const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       setError('Please log in to vote');
       return;
     }
 
     try {
-      const response = await fetch(`/api/community/reports/${reportId}/vote`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': localStorage.getItem('userId'),
-        },
-        body: JSON.stringify({ voteType }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Update local votes
-        setUserVotes(prev => ({
-          ...prev,
-          [reportId]: prev[reportId] === voteType ? null : voteType,
-        }));
-        loadReports();
-      }
+      await apiClient.post(`/api/community/reports/${reportId}/vote`, { voteType });
+      setUserVotes(prev => ({
+        ...prev,
+        [reportId]: prev[reportId] === voteType ? null : voteType,
+      }));
+      loadReports();
     } catch (err) {
       setError(err.message);
     }

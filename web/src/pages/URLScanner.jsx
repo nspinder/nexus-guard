@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../services/apiClient';
 import { useURLScanning } from '../hooks/useURLScanning';
 import URLScanResults from '../components/URLScanResults';
 import '../styles/URLScanner.css';
 
 export default function URLScanner() {
+  const { authToken } = useAuth();
   const [urlInput, setUrlInput] = useState('');
   const [scanHistory, setScanHistory] = useState([]);
   const { scanning, urlResults, error, scanURLs, clearResults } = useURLScanning();
@@ -43,28 +46,8 @@ export default function URLScanner() {
       return;
     }
 
-    // Perform the scan
-    const authToken = localStorage.getItem('authToken');
-    const userId = localStorage.getItem('userId');
-    const userEmail = localStorage.getItem('userEmail');
-
     try {
-      const response = await fetch('/api/url/scan', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': userId,
-          'X-User-Email': userEmail,
-        },
-        body: JSON.stringify({ url: urlInput }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to scan URL');
-      }
-
-      const data = await response.json();
+      const data = await apiClient.post('/api/url/scan', { url: urlInput });
       const result = data.data;
 
       // Add to history

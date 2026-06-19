@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff, AlertTriangle, Clock, TrendingDown } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../services/apiClient';
 import '../styles/PasswordChecker.css';
 
 export default function PasswordChecker() {
+  const { authToken } = useAuth();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [result, setResult] = useState(null);
@@ -16,22 +19,8 @@ export default function PasswordChecker() {
 
   const loadHistory = async () => {
     try {
-      const authToken = localStorage.getItem('authToken');
-      const userId = localStorage.getItem('userId');
-      const userEmail = localStorage.getItem('userEmail');
-
-      const response = await fetch('/api/password/history', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': userId,
-          'X-User-Email': userEmail,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHistory(data.data || []);
-      }
+      const data = await apiClient.get('/api/password/history');
+      setHistory(data.data || []);
     } catch (err) {
       console.error('Failed to load history:', err);
     }
@@ -50,28 +39,7 @@ export default function PasswordChecker() {
     setLoading(true);
 
     try {
-      const authToken = localStorage.getItem('authToken');
-      const userId = localStorage.getItem('userId');
-      const userEmail = localStorage.getItem('userEmail');
-
-      const response = await fetch('/api/password/check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'X-User-Id': userId,
-          'X-User-Email': userEmail,
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Failed to check password');
-        return;
-      }
-
+      const data = await apiClient.post('/api/password/check', { password });
       setResult(data.data);
       setPassword('');
       loadHistory();
