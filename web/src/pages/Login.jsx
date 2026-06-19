@@ -1,7 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Shield, AlertCircle, Lock, Mail, Zap, Phone, Bell } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
+import { validateEmail } from '../utils/validation';
 
 export default function Login({ onLogin }) {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const { error: showError, success: showSuccess } = useNotification();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,19 +21,48 @@ export default function Login({ onLogin }) {
     setError('');
 
     try {
+      // Validate inputs
       if (!email || !password) {
         setError('Please fill in all fields');
+        showError('Please fill in all fields');
         setLoading(false);
         return;
       }
 
+      if (!validateEmail(email)) {
+        setError('Please enter a valid email address');
+        showError('Please enter a valid email address');
+        setLoading(false);
+        return;
+      }
+
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        showError('Password must be at least 6 characters');
+        setLoading(false);
+        return;
+      }
+
+      // Create token (simple base64 - in production use proper OAuth)
       const token = btoa(`${email}:${password}`);
-      onLogin({
+
+      // Login via context
+      const success = await login({
         id: `user-${Date.now()}`,
         email,
       }, token);
+
+      if (success) {
+        showSuccess('Login successful!');
+        navigate('/home');
+      } else {
+        setError('Login failed. Please try again.');
+        showError('Login failed. Please try again.');
+      }
     } catch (err) {
-      setError(err.message || 'Login failed');
+      const message = err.message || 'Login failed';
+      setError(message);
+      showError(message);
     } finally {
       setLoading(false);
     }

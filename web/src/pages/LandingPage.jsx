@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Shield, Check, ArrowRight, Menu, X } from 'lucide-react';
 import '../styles/LandingPage.css';
 
 export default function LandingPage({ onNavigate, onLogin }) {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setMobileMenuOpen(false);
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   const renderPage = () => {
@@ -68,7 +74,7 @@ export default function LandingPage({ onNavigate, onLogin }) {
             >
               Contact
             </button>
-            <button onClick={onLogin} className="nav-login">
+            <button onClick={handleLogin} className="nav-login">
               Login
             </button>
           </div>
