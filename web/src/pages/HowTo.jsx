@@ -18,6 +18,7 @@ export default function HowTo() {
 
   const handleNavigate = (route) => {
     navigate(routeMap[route] || '/');
+  };
 
   const toggleGuide = (index) => {
     setExpandedGuide(expandedGuide === index ? -1 : index);

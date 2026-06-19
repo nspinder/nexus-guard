@@ -16,6 +16,8 @@ export default function WhereToStart() {
 
   const handleNavigate = (route) => {
     navigate(routeMap[route] || '/');
+  };
+
   return (
     <div className="guide-page">
       <div className="guide-header">
