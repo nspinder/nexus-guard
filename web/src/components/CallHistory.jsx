@@ -3,6 +3,7 @@ import { Phone, Trash2 } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import Pagination from './Pagination';
 import SearchFilter from './SearchFilter';
+import ErrorMessage from './ErrorMessage';
 import { SkeletonItem } from './SkeletonLoader';
 
 const PAGE_SIZE = 10;
@@ -10,6 +11,7 @@ const PAGE_SIZE = 10;
 export default function CallHistory({ authToken }) {
   const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -27,6 +29,7 @@ export default function CallHistory({ authToken }) {
   const fetchCalls = async () => {
     try {
       setLoading(true);
+      setError(null);
       const offset = (currentPage - 1) * PAGE_SIZE;
       const params = new URLSearchParams();
       params.append('limit', PAGE_SIZE);
@@ -39,8 +42,9 @@ export default function CallHistory({ authToken }) {
       );
       setCalls(data.calls || []);
       setTotalItems(data.total || 0);
-    } catch (error) {
-      console.error('Failed to fetch call history:', error);
+    } catch (err) {
+      console.error('Failed to fetch call history:', err);
+      setError(err);
       setCalls([]);
     } finally {
       setLoading(false);
@@ -88,6 +92,15 @@ export default function CallHistory({ authToken }) {
         <h2 className="text-2xl font-bold text-white mb-2">Call History</h2>
         <p className="text-475569">{totalItems} calls analyzed</p>
       </div>
+
+      {error && (
+        <ErrorMessage
+          error={error}
+          onRetry={fetchCalls}
+          onDismiss={() => setError(null)}
+          title="Failed to load calls"
+        />
+      )}
 
       <SearchFilter
         value={searchQuery}

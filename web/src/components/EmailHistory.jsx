@@ -3,6 +3,7 @@ import { Mail, Trash2 } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import Pagination from './Pagination';
 import SearchFilter from './SearchFilter';
+import ErrorMessage from './ErrorMessage';
 import { SkeletonItem } from './SkeletonLoader';
 
 const PAGE_SIZE = 10;
@@ -10,6 +11,7 @@ const PAGE_SIZE = 10;
 export default function EmailHistory({ authToken }) {
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -27,6 +29,7 @@ export default function EmailHistory({ authToken }) {
   const fetchEmails = async () => {
     try {
       setLoading(true);
+      setError(null);
       const offset = (currentPage - 1) * PAGE_SIZE;
       const params = new URLSearchParams();
       params.append('limit', PAGE_SIZE);
@@ -39,8 +42,9 @@ export default function EmailHistory({ authToken }) {
       );
       setEmails(data.emails || []);
       setTotalItems(data.total || 0);
-    } catch (error) {
-      console.error('Failed to fetch email history:', error);
+    } catch (err) {
+      console.error('Failed to fetch email history:', err);
+      setError(err);
       setEmails([]);
     } finally {
       setLoading(false);
@@ -90,6 +94,15 @@ export default function EmailHistory({ authToken }) {
         <h2 className="text-2xl font-bold text-white mb-2">Email History</h2>
         <p className="text-475569">{totalItems} emails analyzed</p>
       </div>
+
+      {error && (
+        <ErrorMessage
+          error={error}
+          onRetry={fetchEmails}
+          onDismiss={() => setError(null)}
+          title="Failed to load emails"
+        />
+      )}
 
       <SearchFilter
         value={searchQuery}

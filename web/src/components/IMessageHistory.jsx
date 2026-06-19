@@ -5,6 +5,7 @@ import { useURLScanning } from '../hooks/useURLScanning';
 import URLScanResults from './URLScanResults';
 import Pagination from './Pagination';
 import SearchFilter from './SearchFilter';
+import ErrorMessage from './ErrorMessage';
 import { SkeletonItem } from './SkeletonLoader';
 import '../styles/MessageHistory.css';
 
@@ -35,6 +36,7 @@ export default function IMessageHistory() {
   const fetchMessages = async () => {
     try {
       setLoading(true);
+      setError(null);
       const offset = (currentPage - 1) * PAGE_SIZE;
       const params = new URLSearchParams();
       params.append('limit', PAGE_SIZE);
@@ -58,10 +60,9 @@ export default function IMessageHistory() {
         }
       }
       setMessageURLs(urlMap);
-      setError(null);
     } catch (err) {
       console.error('Failed to fetch iMessage history:', err);
-      setError('Failed to load iMessages');
+      setError(err);
       setMessages([]);
     } finally {
       setLoading(false);
@@ -91,10 +92,6 @@ export default function IMessageHistory() {
     return '#991b1b'; // dark red
   };
 
-  if (error) {
-    return <div className="message-history error">{error}</div>;
-  }
-
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
   return (
@@ -103,6 +100,15 @@ export default function IMessageHistory() {
         <h2>📱 iMessage History</h2>
         <p className="text-475569">{totalItems} messages total</p>
       </div>
+
+      {error && (
+        <ErrorMessage
+          error={error}
+          onRetry={fetchMessages}
+          onDismiss={() => setError(null)}
+          title="Failed to load iMessages"
+        />
+      )}
 
       <SearchFilter
         value={searchQuery}
