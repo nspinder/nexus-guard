@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MessageCircle, Trash2 } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import Pagination from './Pagination';
+import SearchFilter from './SearchFilter';
 
 const PAGE_SIZE = 10;
 
@@ -11,17 +12,29 @@ export default function WhatsappHistory({ authToken }) {
   const [deleting, setDeleting] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [riskFilter, setRiskFilter] = useState('');
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, riskFilter]);
 
   useEffect(() => {
     fetchMessages();
-  }, [currentPage, authToken]);
+  }, [currentPage, searchQuery, riskFilter, authToken]);
 
   const fetchMessages = async () => {
     try {
       setLoading(true);
       const offset = (currentPage - 1) * PAGE_SIZE;
+      const params = new URLSearchParams();
+      params.append('limit', PAGE_SIZE);
+      params.append('offset', offset);
+      if (searchQuery) params.append('search', searchQuery);
+      if (riskFilter) params.append('riskLevel', riskFilter);
+
       const data = await apiClient.get(
-        `/api/whatsapp/history?limit=${PAGE_SIZE}&offset=${offset}`
+        `/api/whatsapp/history?${params.toString()}`
       );
       setMessages(data.messages || []);
       setTotalItems(data.total || 0);
@@ -68,6 +81,19 @@ export default function WhatsappHistory({ authToken }) {
         <h2 className="text-2xl font-bold text-white mb-2">WhatsApp History</h2>
         <p className="text-475569">{totalItems} messages analyzed</p>
       </div>
+
+      <SearchFilter
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by sender or message..."
+        onClear={() => {
+          setSearchQuery('');
+          setRiskFilter('');
+        }}
+        loading={loading}
+        riskFilter={riskFilter}
+        onRiskFilterChange={setRiskFilter}
+      />
 
       {loading ? (
         <div className="flex items-center justify-center py-8">

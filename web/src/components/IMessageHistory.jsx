@@ -4,6 +4,7 @@ import apiClient from '../services/apiClient';
 import { useURLScanning } from '../hooks/useURLScanning';
 import URLScanResults from './URLScanResults';
 import Pagination from './Pagination';
+import SearchFilter from './SearchFilter';
 import '../styles/MessageHistory.css';
 
 const PAGE_SIZE = 10;
@@ -16,20 +17,32 @@ export default function IMessageHistory() {
   const [messageURLs, setMessageURLs] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [riskFilter, setRiskFilter] = useState('');
   const { scanURLs } = useURLScanning();
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, riskFilter]);
 
   useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, 10000);
     return () => clearInterval(interval);
-  }, [currentPage]);
+  }, [currentPage, searchQuery, riskFilter]);
 
   const fetchMessages = async () => {
     try {
       setLoading(true);
       const offset = (currentPage - 1) * PAGE_SIZE;
+      const params = new URLSearchParams();
+      params.append('limit', PAGE_SIZE);
+      params.append('offset', offset);
+      if (searchQuery) params.append('search', searchQuery);
+      if (riskFilter) params.append('riskLevel', riskFilter);
+
       const data = await apiClient.get(
-        `/api/imessage/history?limit=${PAGE_SIZE}&offset=${offset}`
+        `/api/imessage/history?${params.toString()}`
       );
 
       setMessages(data.messages || []);
@@ -84,8 +97,24 @@ export default function IMessageHistory() {
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
   return (
-    <div className="message-history">
-      <h2>📱 iMessage History ({totalItems} total)</h2>
+    <div className="message-history space-y-4">
+      <div>
+        <h2>📱 iMessage History</h2>
+        <p className="text-475569">{totalItems} messages total</p>
+      </div>
+
+      <SearchFilter
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by sender or message..."
+        onClear={() => {
+          setSearchQuery('');
+          setRiskFilter('');
+        }}
+        loading={loading}
+        riskFilter={riskFilter}
+        onRiskFilterChange={setRiskFilter}
+      />
       {loading ? (
         <p className="empty-state">Loading iMessages...</p>
       ) : messages.length === 0 ? (
