@@ -18,8 +18,8 @@ export default function NavigationLayout({ children }) {
   const isActive = (pathname) => location.pathname === pathname;
 
   return (
-    <div className="app-container">
-      <nav className="app-navbar">
+    <div className="app-container" style={{ display: 'flex', height: '100vh', width: '100%' }}>
+      <nav className="app-navbar" style={{ width: '260px', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', borderRight: '1px solid rgba(255, 255, 255, 0.1)', overflowY: 'auto', position: 'sticky', top: 0, height: '100vh' }}>
         <div className="nav-container">
           <div className="nav-brand">
             <Shield className="w-6 h-6 text-blue-400" />
@@ -144,7 +144,7 @@ export default function NavigationLayout({ children }) {
         </div>
       </nav>
 
-      <main className="app-main">{children}</main>
+      <main className="app-main" style={{ flex: 1, overflowY: 'auto', background: '#ffffff' }}>{children}</main>
     </div>
   );
 }
