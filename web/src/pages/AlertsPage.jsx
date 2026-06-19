@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import AlertsPanel from '../components/AlertsPanel';
 import { useRealtimeAlerts } from '../hooks/useRealtimeAlerts';
 import { notifyScamDetected } from '../services/notifications';
 
 export default function AlertsPage({ user, authToken }) {
+  const { user: authUser } = useAuth();
+  const currentUser = user || authUser;
   const [alerts, setAlerts] = useState([]);
 
   const handleNewAlert = (alert) => {
@@ -12,7 +15,7 @@ export default function AlertsPage({ user, authToken }) {
   };
 
   // Listen for real-time alerts from server
-  useRealtimeAlerts(user?.id, (scamData) => {
+  useRealtimeAlerts(currentUser?.id, (scamData) => {
     handleNewAlert({
       type: scamData.type,
       sender: scamData.sender,

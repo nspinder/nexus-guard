@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Mail, Phone, AlertCircle, Shield, TrendingUp, Activity } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { useRealtimeAlerts } from '../hooks/useRealtimeAlerts';
 import { notifyScamDetected } from '../services/notifications';
+import apiClient from '../services/apiClient';
 
 export default function Dashboard({ user, authToken }) {
+  const { user: authUser, authToken: token } = useAuth();
+  const currentUser = user || authUser;
+  const currentToken = authToken || token;
   const [alerts, setAlerts] = useState([]);
   const [stats, setStats] = useState({
     emailsAnalyzed: 0,
@@ -14,26 +19,11 @@ export default function Dashboard({ user, authToken }) {
 
   // Sync user on mount
   useEffect(() => {
-    if (authToken && user?.id) {
-      fetch('/api/auth/sync', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'X-User-Id': user.id,
-          'X-User-Email': user.primaryEmailAddress?.emailAddress,
-          'Content-Type': 'application/json',
-        },
-      }).catch(console.error);
+    if (currentToken && currentUser?.id) {
+      apiClient.post('/auth/sync', {}).catch(console.error);
 
       // Fetch user stats
-      fetch('/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'X-User-Id': user.id,
-          'X-User-Email': user.primaryEmailAddress?.emailAddress,
-        },
-      })
-        .then((res) => res.json())
+      apiClient.get('/auth/me')
         .then((data) => {
           if (data.stats) {
             setStats({
@@ -45,7 +35,7 @@ export default function Dashboard({ user, authToken }) {
         })
         .catch(console.error);
     }
-  }, [authToken, user?.id, alerts.length]);
+  }, [currentToken, currentUser?.id, alerts.length]);
 
   const handleNewAlert = (alert) => {
     setAlerts([alert, ...alerts]);
@@ -53,7 +43,7 @@ export default function Dashboard({ user, authToken }) {
   };
 
   // Listen for real-time alerts from server
-  useRealtimeAlerts(user?.id, (scamData) => {
+  useRealtimeAlerts(currentUser?.id, (scamData) => {
     const newAlert = {
       type: scamData.type,
       sender: scamData.sender,

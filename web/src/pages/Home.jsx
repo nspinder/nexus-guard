@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { ArrowRight, Book, Zap, Shield, BarChart3 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Home.css';
 
 export default function Home({ onNavigate, user }) {
+  const { user: authUser } = useAuth();
+  const currentUser = user || authUser;
   const [activeTab, setActiveTab] = useState('overview');
+
+  const username = currentUser?.email?.split('@')[0] || 'User';
 
   return (
     <div className="home-page">
       <div className="home-hero">
-        <h1>Welcome to NexusGuard, {user.email.split('@')[0]}!</h1>
+        <h1>Welcome to NexusGuard, {username}!</h1>
         <p>Your comprehensive fraud and scam detection platform</p>
       </div>
 
