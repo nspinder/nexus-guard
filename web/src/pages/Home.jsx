@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Book, Zap, Shield, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/Home.css';
 
-export default function Home({ onNavigate, user }) {
+export default function Home({ user }) {
+  const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const currentUser = user || authUser;
   const [activeTab, setActiveTab] = useState('overview');
@@ -163,7 +165,7 @@ export default function Home({ onNavigate, user }) {
               </div>
               <h3>Where to Start</h3>
               <p>New to NexusGuard? Get a guided tour of all features and learn the basics.</p>
-              <button className="resource-btn" onClick={() => onNavigate('where-to-start')}>
+              <button className="resource-btn" onClick={() => navigate('/where-to-start')}>
                 Read Guide <ArrowRight size={16} />
               </button>
             </div>
@@ -174,7 +176,7 @@ export default function Home({ onNavigate, user }) {
               </div>
               <h3>How-To Guides</h3>
               <p>Step-by-step instructions for each feature and common tasks.</p>
-              <button className="resource-btn" onClick={() => onNavigate('how-to')}>
+              <button className="resource-btn" onClick={() => navigate('/how-to')}>
                 View Guides <ArrowRight size={16} />
               </button>
             </div>
