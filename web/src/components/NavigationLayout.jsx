@@ -8,6 +8,8 @@ export default function NavigationLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  console.log('NavigationLayout rendering. User:', user);
+
   const handleLogout = () => {
     logout();
     navigate('/');
