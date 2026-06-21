@@ -26,8 +26,8 @@ outlookRouter.get('/auth-url', verifyToken, async (req, res) => {
     const authUrl = createOutlookOAuthUrl(user.id);
     res.json({ authUrl });
   } catch (error) {
-    console.error('Auth URL error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Auth URL error:', error.message);
+    res.status(500).json({ error: 'Failed to generate authentication URL' });
   }
 });
 
@@ -48,9 +48,9 @@ outlookRouter.get('/callback', async (req, res) => {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     res.redirect(`${frontendUrl}/dashboard?outlook=connected&email=${encodeURIComponent(userEmail)}`);
   } catch (error) {
-    console.error('Outlook callback error:', error);
+    console.error('Outlook callback error:', error.message);
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${frontendUrl}/dashboard?outlook=error&message=${encodeURIComponent(error.message)}`);
+    res.redirect(`${frontendUrl}/dashboard?outlook=error`);
   }
 });
 

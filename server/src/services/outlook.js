@@ -64,7 +64,7 @@ export async function handleOutlookCallback(code, userId, prisma) {
 
     return userEmail;
   } catch (error) {
-    console.error('Outlook callback error:', error);
+    console.error('Outlook callback error:', error.message);
     throw error;
   }
 }
@@ -124,7 +124,7 @@ export async function syncOutlookEmails(userId, accessToken, prisma, daysBack = 
 
     console.log(`✓ Outlook sync completed for user ${userId}`);
   } catch (error) {
-    console.error('Outlook sync error:', error);
+    console.error('Outlook sync error:', error.message);
     throw error;
   }
 }

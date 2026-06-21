@@ -3,12 +3,6 @@ import { google } from 'googleapis';
 const gmail = google.gmail('v1');
 
 export async function createGmailOAuthUrl(userId) {
-  console.log('Gmail OAuth Debug:');
-  console.log('  CLIENT_ID:', process.env.GMAIL_CLIENT_ID);
-  console.log('  CLIENT_SECRET:', process.env.GMAIL_CLIENT_SECRET);
-  console.log('  BACKEND_URL:', process.env.BACKEND_URL);
-  console.log('  Redirect URI:', `${process.env.BACKEND_URL}/api/email/gmail/callback`);
-
   const oauth2Client = new google.auth.OAuth2(
     process.env.GMAIL_CLIENT_ID,
     process.env.GMAIL_CLIENT_SECRET,
@@ -22,10 +16,9 @@ export async function createGmailOAuthUrl(userId) {
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
-    state: userId, // Pass userId as state for security
+    state: userId,
   });
 
-  console.log('Generated URL:', url);
   return url;
 }
 
@@ -125,7 +118,7 @@ export async function syncGmailEmails(userId, oauth2Client, prisma, daysBack = 3
 
     console.log(`✓ Gmail sync completed for user ${userId}`);
   } catch (error) {
-    console.error('Gmail sync error:', error);
+    console.error('Gmail sync error:', error.message);
     throw error;
   }
 }

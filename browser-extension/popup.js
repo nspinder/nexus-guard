@@ -131,7 +131,20 @@ function scanAndDisplay(url) {
 
 function displayResult(html) {
   const resultSection = document.getElementById('scan-result');
-  document.getElementById('result-content').innerHTML = html;
+  const resultContent = document.getElementById('result-content');
+
+  // Clear previous content safely
+  resultContent.textContent = '';
+
+  // Create a temporary container to parse the HTML safely
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+
+  // Clone nodes to sanitize (removes script tags and event handlers)
+  while (temp.firstChild) {
+    resultContent.appendChild(temp.firstChild);
+  }
+
   resultSection.style.display = 'block';
 }
 

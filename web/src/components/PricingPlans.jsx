@@ -62,6 +62,15 @@ const PLANS = [
 export default function PricingPlans({ currentTier, authToken, onClose }) {
   const [loading, setLoading] = useState(null);
 
+  const isValidRedirectUrl = (url) => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const handleUpgrade = async (tier) => {
     if (tier === 'free' || !authToken) return;
 
@@ -79,7 +88,11 @@ export default function PricingPlans({ currentTier, authToken, onClose }) {
       const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url;
+        if (isValidRedirectUrl(data.url)) {
+          window.location.href = data.url;
+        } else {
+          alert('Invalid checkout URL received');
+        }
       } else if (data.error) {
         alert(`Error: ${data.error}`);
       }

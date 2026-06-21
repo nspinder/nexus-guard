@@ -45,6 +45,15 @@ export default function OutlookIntegration({ authToken }) {
     }
   };
 
+  const isValidRedirectUrl = (url) => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const handleConnect = async () => {
     setLoading(true);
     try {
@@ -58,7 +67,11 @@ export default function OutlookIntegration({ authToken }) {
         },
       });
       const data = await response.json();
-      window.location.href = data.authUrl;
+      if (isValidRedirectUrl(data.authUrl)) {
+        window.location.href = data.authUrl;
+      } else {
+        alert('Invalid authentication URL received');
+      }
     } catch (error) {
       console.error('Failed to get auth URL:', error);
       alert('Failed to connect Outlook');
