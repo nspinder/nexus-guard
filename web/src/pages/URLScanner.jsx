@@ -47,7 +47,7 @@ export default function URLScanner() {
     }
 
     try {
-      const data = await apiClient.post('/api/url/scan', { url: urlInput });
+      const data = await apiClient.post('/url/scan', { url: urlInput });
       const result = data.data;
 
       // Add to history

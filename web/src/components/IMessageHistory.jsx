@@ -45,7 +45,7 @@ export default function IMessageHistory() {
       if (riskFilter) params.append('riskLevel', riskFilter);
 
       const data = await apiClient.get(
-        `/api/imessage/history?${params.toString()}`
+        `/imessage/history?${params.toString()}`
       );
 
       setMessages(data.messages || []);
@@ -78,7 +78,7 @@ export default function IMessageHistory() {
 
   const deleteMessage = async (messageId) => {
     try {
-      await apiClient.delete(`/api/imessage/${messageId}`);
+      await apiClient.delete(`/imessage/${messageId}`);
       setMessages(messages.filter((m) => m.id !== messageId));
     } catch (err) {
       console.error('Failed to delete message:', err);

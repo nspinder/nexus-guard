@@ -96,13 +96,17 @@ callRouter.post('/analyze', verifyToken, async (req, res) => {
 
 // Get call history
 callRouter.get('/history', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
   const { limit = 50, offset = 0 } = req.query;
 
   try {
     const user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { email },
     });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     const calls = await req.app.locals.prisma.callLog.findMany({
       where: { userId: user.id },
@@ -123,7 +127,7 @@ callRouter.get('/history', verifyToken, async (req, res) => {
 
 // Delete call log
 callRouter.delete('/:callId', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
   const { callId } = req.params;
 
   try {
@@ -136,10 +140,10 @@ callRouter.delete('/:callId', verifyToken, async (req, res) => {
     }
 
     const user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { email },
     });
 
-    if (callLog.userId !== user.id) {
+    if (!user || callLog.userId !== user.id) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 

@@ -38,7 +38,7 @@ export default function EmailHistory({ authToken }) {
       if (riskFilter) params.append('riskLevel', riskFilter);
 
       const data = await apiClient.get(
-        `/api/email/history?${params.toString()}`
+        `/email/history?${params.toString()}`
       );
       setEmails(data.emails || []);
       setTotalItems(data.total || 0);
@@ -56,7 +56,7 @@ export default function EmailHistory({ authToken }) {
 
     setDeleting(emailId);
     try {
-      await apiClient.delete(`/api/email/${emailId}`);
+      await apiClient.delete(`/email/${emailId}`);
       setEmails(emails.filter(e => e.id !== emailId));
     } catch (error) {
       console.error('Failed to delete email:', error);

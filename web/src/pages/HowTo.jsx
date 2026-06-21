@@ -7,19 +7,6 @@ export default function HowTo() {
   const navigate = useNavigate();
   const [expandedGuide, setExpandedGuide] = useState(0);
 
-  const routeMap = {
-    'url-scanner': '/url-scanner',
-    'phone-validator': '/phone-validator',
-    'password-checker': '/password-checker',
-    'voice-analyzer': '/voice-analyzer',
-    'community-reports': '/community-reports',
-    dashboard: '/dashboard',
-  };
-
-  const handleNavigate = (route) => {
-    navigate(routeMap[route] || '/');
-  };
-
   const toggleGuide = (index) => {
     setExpandedGuide(expandedGuide === index ? -1 : index);
   };
@@ -349,7 +336,7 @@ export default function HowTo() {
                             4: 'community-reports',
                             5: 'home'
                           };
-                          handleNavigate(featureMap[index]);
+                          onNavigate && onNavigate(featureMap[index]);
                         }}
                       >
                         Try {guide.title.split(':')[0]} Now

@@ -4,13 +4,11 @@ import { ArrowRight, Book, Zap, Shield, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/Home.css';
 
-export default function Home({ user }) {
+export default function Home() {
   const navigate = useNavigate();
-  const { user: authUser } = useAuth();
-  const currentUser = user || authUser;
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-
-  const username = currentUser?.email?.split('@')[0] || 'User';
+  const username = user?.email?.split('@')[0] || 'User';
 
   return (
     <div className="home-page">
@@ -54,23 +52,23 @@ export default function Home({ user }) {
           <div className="steps-grid">
             <div className="setup-step">
               <div className="step-num">1</div>
-              <h3>Enable Protections</h3>
+              <h3>Quick Guide</h3>
               <p>Set up the features you want to use: URL Scanner, Phone Validator, Password Checker, Voice Analysis, or Browser Extension</p>
-              <button className="step-btn">Learn More</button>
+              <button onClick={() => navigate('/start-tour')} className="step-btn">Learn More</button>
             </div>
 
             <div className="setup-step">
               <div className="step-num">2</div>
               <h3>Customize Settings</h3>
               <p>Adjust alert thresholds and preferences to match your security needs</p>
-              <button className="step-btn">Go to Settings</button>
+              <button onClick={() => navigate('/settings')} className="step-btn">Go to Settings</button>
             </div>
 
             <div className="setup-step">
               <div className="step-num">3</div>
               <h3>Start Scanning</h3>
               <p>Begin analyzing URLs, phone numbers, passwords, and voice calls for threats</p>
-              <button className="step-btn">Start Now</button>
+              <button onClick={() => navigate('/analyze-email')} className="step-btn">Start Now</button>
             </div>
           </div>
         </section>
@@ -89,7 +87,7 @@ export default function Home({ user }) {
                 <h3>URL Scanner</h3>
                 <p>Check if links are malicious before clicking them. Scan URLs in real-time with our multi-layer threat detection system.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/url-scanner')} className="feature-btn">
                 Try Now <ArrowRight size={16} />
               </button>
             </div>
@@ -100,7 +98,7 @@ export default function Home({ user }) {
                 <h3>Phone Number Validator</h3>
                 <p>Identify spam and scam phone numbers before answering. International support for 100+ countries including Brazil.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/phone-validator')} className="feature-btn">
                 Try Now <ArrowRight size={16} />
               </button>
             </div>
@@ -111,7 +109,7 @@ export default function Home({ user }) {
                 <h3>Password Breach Checker</h3>
                 <p>Check if your passwords have been compromised in known data breaches. Get strength analysis and recommendations.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/password-checker')} className="feature-btn">
                 Try Now <ArrowRight size={16} />
               </button>
             </div>
@@ -122,7 +120,7 @@ export default function Home({ user }) {
                 <h3>Voice Call Analysis</h3>
                 <p>Analyze phone call transcripts for scam language and deepfake indicators. Protect yourself from voice-based fraud.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/voice-analyzer')} className="feature-btn">
                 Try Now <ArrowRight size={16} />
               </button>
             </div>
@@ -133,7 +131,7 @@ export default function Home({ user }) {
                 <h3>Community Reports</h3>
                 <p>View and contribute to community threat reports. Help protect others by reporting scams and fraud attempts.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/community-reports')} className="feature-btn">
                 Try Now <ArrowRight size={16} />
               </button>
             </div>
@@ -144,7 +142,7 @@ export default function Home({ user }) {
                 <h3>Browser Extension</h3>
                 <p>Get real-time link protection across all websites. Automatic badge injection for suspicious URLs.</p>
               </div>
-              <button className="feature-btn">
+              <button onClick={() => navigate('/browser-extension')} className="feature-btn">
                 Install Now <ArrowRight size={16} />
               </button>
             </div>
@@ -187,7 +185,7 @@ export default function Home({ user }) {
               </div>
               <h3>Security Tips</h3>
               <p>Best practices for staying safe from scams, fraud, and cyber threats.</p>
-              <button className="resource-btn">
+              <button onClick={() => navigate('/security-tips')} className="resource-btn">
                 Learn Tips <ArrowRight size={16} />
               </button>
             </div>
@@ -228,13 +226,13 @@ export default function Home({ user }) {
           <div className="action-card primary">
             <h3>First Time Here?</h3>
             <p>Follow our guided tour to understand all features</p>
-            <button className="action-btn">Start Tour</button>
+            <button onClick={() => navigate('/start-tour')} className="action-btn">Start Tour</button>
           </div>
 
           <div className="action-card">
             <h3>Need Help?</h3>
             <p>Check our documentation or contact support</p>
-            <button className="action-btn">Get Help</button>
+            <button onClick={() => navigate('/get-help')} className="action-btn">Get Help</button>
           </div>
         </section>
       </div>

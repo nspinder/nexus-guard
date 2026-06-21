@@ -76,11 +76,20 @@ class URLScanner {
         results.warnings = basicResult.warnings;
 
         if (!results.isMalicious) {
-          // If not in threat database but has suspicious patterns
-          results.riskLevel = 'medium';
-          results.overallRisk = 'medium';
-          results.threatLevel = 'warning';
-          results.threats = [...new Set([...results.threats, ...basicResult.warnings])];
+          // If not in threat database but has multiple suspicious patterns, mark as malicious
+          if (basicResult.warnings.length >= 3) {
+            results.isMalicious = true;
+            results.riskLevel = 'high';
+            results.overallRisk = 'high';
+            results.threatLevel = 'danger';
+            results.threats = [...new Set([...results.threats, ...basicResult.warnings])];
+          } else {
+            // If fewer patterns, just mark as warning
+            results.riskLevel = 'medium';
+            results.overallRisk = 'medium';
+            results.threatLevel = 'warning';
+            results.threats = [...new Set([...results.threats, ...basicResult.warnings])];
+          }
         }
       } else if (!results.isMalicious) {
         results.overallRisk = 'low';
@@ -206,12 +215,16 @@ class URLScanner {
         suspicious = true;
       }
 
-      // Check for common phishing patterns
+      // Check for common phishing patterns (in both path and hostname)
+      const fullUrl = pathname + hostname;
       if (
-        pathname.includes('login') ||
-        pathname.includes('signin') ||
-        pathname.includes('verify') ||
-        pathname.includes('confirm')
+        fullUrl.includes('login') ||
+        fullUrl.includes('signin') ||
+        fullUrl.includes('verify') ||
+        fullUrl.includes('confirm') ||
+        fullUrl.includes('account') ||
+        fullUrl.includes('update') ||
+        fullUrl.includes('confirm')
       ) {
         warnings.push('Contains login/verification keywords');
         suspicious = true;
@@ -225,7 +238,8 @@ class URLScanner {
       }
 
       // Check for homograph attacks (similar looking domains)
-      if (hostname.includes('0') || hostname.includes('l') || hostname.includes('O')) {
+      // Check for 0 (zero), 1 (one), l (lowercase L), O (uppercase O) which look like other characters
+      if (hostname.includes('0') || hostname.includes('1') || hostname.includes('l') || hostname.includes('O')) {
         warnings.push('Domain may use lookalike characters');
         suspicious = true;
       }

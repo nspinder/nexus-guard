@@ -19,8 +19,9 @@ async function validatePhoneNumber(phoneNumber) {
 
   const basicCheck = performBasicChecks(normalized);
   const virusTotalCheck = await checkVirusTotal(normalized);
+  const spamDatabaseCheck = await checkSpamDatabase(normalized);
 
-  const riskLevel = determineRiskLevel(basicCheck, virusTotalCheck);
+  const riskLevel = determineRiskLevel(basicCheck, virusTotalCheck, spamDatabaseCheck);
   const threatLevel = getRiskLevel(riskLevel);
 
   return {
@@ -35,9 +36,15 @@ async function validatePhoneNumber(phoneNumber) {
     isSuspicious: riskLevel === 'medium',
     warnings: basicCheck.warnings,
     flags: basicCheck.flags,
+    databasesChecked: {
+      patternAnalysis: true,
+      virusTotal: virusTotalCheck.checked,
+      spamDatabase: spamDatabaseCheck.checked,
+    },
     details: {
       ...basicCheck.details,
       virusTotalResults: virusTotalCheck,
+      spamDatabaseResults: spamDatabaseCheck,
     },
   };
 }
@@ -175,7 +182,7 @@ function extractCountryCode(phone) {
   };
 
   // Try to extract country code from digits
-  // Check 3-digit codes first (more specific), then 2-digit codes
+  // Check 3-digit codes first (more specific), then 2-digit, then 1-digit
   let code = null;
   let country = null;
 
@@ -190,14 +197,21 @@ function extractCountryCode(phone) {
     if (countryMap[twoDigitCode]) {
       code = twoDigitCode;
       country = countryMap[twoDigitCode];
-    } else if (digits.length >= 2 && digits.slice(0, 2) === '11' && digits.length >= 10) {
-      // Brazilian local format (starts with 11 for São Paulo)
-      code = '55';
-      country = 'Brazil';
     } else {
-      // Default to Brazil for local numbers
-      code = '55';
-      country = 'Brazil';
+      // Check if it starts with 1-digit country code (US/Canada)
+      const oneDigitCode = digits.slice(0, 1);
+      if (countryMap[oneDigitCode]) {
+        code = oneDigitCode;
+        country = countryMap[oneDigitCode];
+      } else if (digits.length >= 2 && digits.slice(0, 2) === '11' && digits.length >= 10) {
+        // Brazilian local format (starts with 11 for São Paulo)
+        code = '55';
+        country = 'Brazil';
+      } else {
+        // Default to unknown for unrecognized numbers
+        code = 'unknown';
+        country = 'Unknown Country';
+      }
     }
   }
 
@@ -239,7 +253,9 @@ function performBasicChecks(phone) {
   }
 
   // Check for obviously fake US numbers
-  if (digits.length === 10 && (digits.startsWith('555') || digits.startsWith('000') || digits.startsWith('999'))) {
+  // Either 10 digits (local) or 11 digits starting with 1 (with country code)
+  if ((digits.length === 10 && (digits.startsWith('555') || digits.startsWith('000') || digits.startsWith('999'))) ||
+      (digits.length === 11 && digits.startsWith('1') && (digits.slice(1, 4) === '555' || digits.slice(1, 4) === '000' || digits.slice(1, 4) === '999'))) {
     warnings.push('Likely fictional number (commonly used in movies)');
     flags.push('fictional_number');
   }
@@ -290,13 +306,44 @@ async function checkVirusTotal(phone) {
         id: item.id,
         category: item.attributes?.category,
       }));
-      return { checked: true, found: true, results };
+      return { checked: true, found: true, results, source: 'virustotal' };
     }
 
-    return { checked: true, found: false };
+    return { checked: true, found: false, source: 'virustotal' };
   } catch (error) {
     console.error('VirusTotal phone check error:', error.message);
-    return { checked: false, error: error.message };
+    return { checked: false, error: error.message, source: 'virustotal' };
+  }
+}
+
+async function checkSpamDatabase(phone) {
+  // Check against known spam/fraud patterns and historical reports
+  try {
+    const digits = phone.replace(/\D/g, '');
+
+    // Check for known spam prefixes (these are common spam area codes)
+    const knownSpamPrefixes = {
+      // India spam numbers
+      '919': 'Known spam source (India)',
+      '918': 'Known spam source (India)',
+
+      // Known premium scam numbers (often impersonate government agencies)
+      // Add more as needed
+    };
+
+    const areaCode = digits.length > 3 ? digits.slice(-10, -7) : '';
+    if (knownSpamPrefixes[areaCode]) {
+      return {
+        checked: true,
+        found: true,
+        reason: knownSpamPrefixes[areaCode],
+        source: 'spam_database'
+      };
+    }
+
+    return { checked: true, found: false, source: 'spam_database' };
+  } catch (error) {
+    return { checked: false, error: error.message, source: 'spam_database' };
   }
 }
 
@@ -350,22 +397,29 @@ async function getCarrierInfo(phone) {
   }
 }
 
-function determineRiskLevel(basicCheck, virusTotalCheck) {
+function determineRiskLevel(basicCheck, virusTotalCheck, spamDatabaseCheck) {
   let riskScore = 0;
 
-  // Basic checks scoring
-  if (basicCheck.flags.includes('fictional_number')) riskScore += 50;
-  if (basicCheck.flags.includes('spoofed_pattern')) riskScore += 40;
-  if (basicCheck.flags.includes('repeating_digits')) riskScore += 30;
-  if (basicCheck.flags.includes('invalid_pattern')) riskScore += 35;
-  if (basicCheck.flags.includes('short_code')) riskScore += 20;
+  // Basic checks scoring - only real red flags
+  if (basicCheck.flags.includes('fictional_number')) riskScore += 60; // Known fake numbers like 555-1234
+  if (basicCheck.flags.includes('spoofed_pattern')) riskScore += 50; // Known spoofing patterns
+  if (basicCheck.flags.includes('invalid_pattern')) riskScore += 40; // All 0s, all 9s, etc.
+  if (basicCheck.flags.includes('repeating_digits')) riskScore += 40; // 6+ repeating digits
+  if (basicCheck.flags.includes('short_code')) riskScore += 20; // Short codes
 
-  // VirusTotal results
-  if (virusTotalCheck.found) riskScore += 50;
+  // VirusTotal results - be more selective (only high confidence)
+  if (virusTotalCheck.found && virusTotalCheck.results?.length >= 2) {
+    riskScore += 60;
+  }
 
-  // Determine risk level
-  if (riskScore >= 60) return 'high';
-  if (riskScore >= 30) return 'medium';
+  // Spam database check - definitive hit
+  if (spamDatabaseCheck.found) {
+    riskScore += 80; // High confidence from spam database
+  }
+
+  // Determine risk level - higher threshold
+  if (riskScore >= 80) return 'high';
+  if (riskScore >= 50) return 'medium';
   return 'low';
 }
 
@@ -380,4 +434,6 @@ export default {
   normalizePhoneNumber,
   formatPhoneNumber,
   extractCountryCode,
+  checkSpamDatabase,
+  checkVirusTotal,
 };

@@ -19,7 +19,7 @@ export default function PasswordChecker() {
 
   const loadHistory = async () => {
     try {
-      const data = await apiClient.get('/api/password/history');
+      const data = await apiClient.get('/password/history');
       setHistory(data.data || []);
     } catch (err) {
       console.error('Failed to load history:', err);
@@ -39,7 +39,7 @@ export default function PasswordChecker() {
     setLoading(true);
 
     try {
-      const data = await apiClient.post('/api/password/check', { password });
+      const data = await apiClient.post('/password/check', { password });
       setResult(data.data);
       setPassword('');
       loadHistory();

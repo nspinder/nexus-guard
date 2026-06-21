@@ -38,7 +38,7 @@ export default function CallHistory({ authToken }) {
       if (riskFilter) params.append('riskLevel', riskFilter);
 
       const data = await apiClient.get(
-        `/api/call/history?${params.toString()}`
+        `/call/history?${params.toString()}`
       );
       setCalls(data.calls || []);
       setTotalItems(data.total || 0);
@@ -56,7 +56,7 @@ export default function CallHistory({ authToken }) {
 
     setDeleting(callId);
     try {
-      await apiClient.delete(`/api/call/${callId}`);
+      await apiClient.delete(`/call/${callId}`);
       setCalls(calls.filter(c => c.id !== callId));
     } catch (error) {
       console.error('Failed to delete call:', error);

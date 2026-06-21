@@ -36,6 +36,11 @@ async function getOrCreateUser(userId, email, prisma) {
   }
 }
 
+// Verify token validity
+authRouter.get('/verify', verifyToken, async (req, res) => {
+  res.json({ valid: true });
+});
+
 // Sync/create user on first login
 authRouter.post('/sync', verifyToken, async (req, res) => {
   const { userId, email } = req.auth;

@@ -35,7 +35,7 @@ export default function CommunityReports() {
       if (filterType) params.append('type', filterType);
       params.append('limit', '50');
 
-      const data = await apiClient.get(`/api/community/reports?${params}`);
+      const data = await apiClient.get(`/community/reports?${params}`);
       setReports(data.data);
       setUserVotes(data.userVotes || {});
     } catch (err) {
@@ -57,7 +57,7 @@ export default function CommunityReports() {
 
     try {
       const data = await apiClient.get(
-        `/api/community/reports/search/${encodeURIComponent(searchQuery)}`
+        `/community/reports/search/${encodeURIComponent(searchQuery)}`
       );
       setReports(data.data);
     } catch (err) {
@@ -84,7 +84,7 @@ export default function CommunityReports() {
     setLoading(true);
 
     try {
-      await apiClient.post('/api/community/reports', formData);
+      await apiClient.post('/community/reports', formData);
       setFormData({
         type: 'url',
         target: '',
@@ -108,7 +108,7 @@ export default function CommunityReports() {
     }
 
     try {
-      await apiClient.post(`/api/community/reports/${reportId}/vote`, { voteType });
+      await apiClient.post(`/community/reports/${reportId}/vote`, { voteType });
       setUserVotes(prev => ({
         ...prev,
         [reportId]: prev[reportId] === voteType ? null : voteType,

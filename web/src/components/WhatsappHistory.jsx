@@ -38,7 +38,7 @@ export default function WhatsappHistory({ authToken }) {
       if (riskFilter) params.append('riskLevel', riskFilter);
 
       const data = await apiClient.get(
-        `/api/whatsapp/history?${params.toString()}`
+        `/whatsapp/history?${params.toString()}`
       );
       setMessages(data.messages || []);
       setTotalItems(data.total || 0);
@@ -56,7 +56,7 @@ export default function WhatsappHistory({ authToken }) {
 
     setDeleting(messageId);
     try {
-      await apiClient.delete(`/api/whatsapp/${messageId}`);
+      await apiClient.delete(`/whatsapp/${messageId}`);
       setMessages(messages.filter(m => m.id !== messageId));
     } catch (error) {
       console.error('Failed to delete message:', error);

@@ -124,13 +124,17 @@ emailRouter.post('/analyze', verifyToken, async (req, res) => {
 
 // Get user's emails with scores
 emailRouter.get('/history', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
   const { limit = 50, offset = 0 } = req.query;
 
   try {
     const user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { email },
     });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     const emails = await req.app.locals.prisma.email.findMany({
       where: { userId: user.id },
@@ -151,23 +155,23 @@ emailRouter.get('/history', verifyToken, async (req, res) => {
 
 // Delete email (for GDPR compliance)
 emailRouter.delete('/:emailId', verifyToken, async (req, res) => {
-  const { userId } = req.auth;
+  const { userId, email } = req.auth;
   const { emailId } = req.params;
 
   try {
-    const email = await req.app.locals.prisma.email.findUnique({
+    const emailRecord = await req.app.locals.prisma.email.findUnique({
       where: { id: emailId },
     });
 
-    if (!email) {
+    if (!emailRecord) {
       return res.status(404).json({ error: 'Email not found' });
     }
 
     const user = await req.app.locals.prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { email },
     });
 
-    if (email.userId !== user.id) {
+    if (!user || emailRecord.userId !== user.id) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 

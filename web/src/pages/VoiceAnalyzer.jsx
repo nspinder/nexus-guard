@@ -25,7 +25,7 @@ export default function VoiceAnalyzer() {
 
   const loadHistory = async () => {
     try {
-      const data = await apiClient.get('/api/voice/history');
+      const data = await apiClient.get('/voice/history');
       setHistory(data.data || []);
     } catch (err) {
       console.error('Failed to load history:', err);
@@ -34,7 +34,7 @@ export default function VoiceAnalyzer() {
 
   const loadStats = async () => {
     try {
-      const data = await apiClient.get('/api/voice/stats');
+      const data = await apiClient.get('/voice/stats');
       setStats(data.data);
     } catch (err) {
       console.error('Failed to load stats:', err);
@@ -59,7 +59,7 @@ export default function VoiceAnalyzer() {
     setLoading(true);
 
     try {
-      const data = await apiClient.post('/api/voice/analyze', {
+      const data = await apiClient.post('/voice/analyze', {
         transcription,
         duration: callData.duration ? parseInt(callData.duration) : null,
         callerId: callData.callerId || null,

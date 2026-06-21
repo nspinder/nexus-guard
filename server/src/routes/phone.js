@@ -25,12 +25,23 @@ router.post('/validate', verifyToken, async (req, res) => {
     }
 
     // Store validation in database if needed
-    const userId = req.auth.userId;
+    const { email } = req.auth;
     const prisma = req.app.locals.prisma;
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
 
     await prisma.phoneValidation.create({
       data: {
-        userId,
+        userId: user.id,
         phoneNumber: result.phoneNumber,
         formatted: result.formattedNumber,
         country: result.countryCode.country,
@@ -58,19 +69,34 @@ router.post('/validate', verifyToken, async (req, res) => {
 
 router.get('/history', verifyToken, async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { email } = req.auth;
     const prisma = req.app.locals.prisma;
     const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     const validations = await prisma.phoneValidation.findMany({
-      where: { userId },
+      where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      skip: offset,
+    });
+
+    const total = await prisma.phoneValidation.count({
+      where: { userId: user.id },
     });
 
     res.json({
       success: true,
       data: validations,
+      total,
     });
   } catch (error) {
     console.error('Phone history error:', error);

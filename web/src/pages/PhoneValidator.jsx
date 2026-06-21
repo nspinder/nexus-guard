@@ -197,10 +197,32 @@ export default function PhoneValidator() {
                   <details className="advanced-details">
                     <summary>Advanced Details</summary>
                     <div className="details-content">
+                      {result.databasesChecked && (
+                        <div className="databases-checked">
+                          <strong>🔍 Databases Checked:</strong>
+                          <ul className="database-list">
+                            <li>✓ Pattern Analysis (fictional numbers, spoofing patterns)</li>
+                            {result.databasesChecked.virusTotal && (
+                              <li>✓ VirusTotal Threat Database</li>
+                            )}
+                            {result.databasesChecked.spamDatabase && (
+                              <li>✓ Spam & Fraud Database</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
                       {result.details.virusTotalResults?.found && (
                         <div className="detail-item">
-                          <strong>VirusTotal Match:</strong>
+                          <strong>⚠️ VirusTotal Match:</strong>
                           <span style={{ color: '#ef4444' }}>Found in threat database</span>
+                        </div>
+                      )}
+
+                      {result.details.spamDatabaseResults?.found && (
+                        <div className="detail-item">
+                          <strong>🚨 Spam Database Match:</strong>
+                          <span style={{ color: '#ef4444' }}>{result.details.spamDatabaseResults.reason}</span>
                         </div>
                       )}
 

@@ -22,13 +22,16 @@ body {
 }
 
 .app-container {
-  display: flex;
+  display: flex !important;
   height: 100vh;
+  width: 100%;
   background: var(--background);
 }
 
 /* App Navbar */
 .app-navbar {
+  display: flex !important;
+  flex-direction: column !important;
   width: 260px;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -39,10 +42,18 @@ body {
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
+nav {
+  display: flex !important;
+  flex-direction: column !important;
+  z-index: 50 !important;
+  position: relative !important;
+}
+
 .nav-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  width: 100% !important;
   padding: 20px 0;
 }
 
@@ -62,11 +73,12 @@ body {
 }
 
 .nav-menu {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 0;
-  flex: 1;
+  flex: 1 !important;
   overflow-y: auto;
+  min-height: 0 !important;
 }
 
 .nav-item {
@@ -127,6 +139,8 @@ body {
   flex: 1;
   overflow-y: auto;
   background: #ffffff;
+  z-index: 1;
+  position: relative;
 }
 
 /* Modal Overlay */

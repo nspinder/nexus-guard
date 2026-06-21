@@ -12,6 +12,10 @@ import CommunityReports from './pages/CommunityReports';
 import VoiceAnalyzer from './pages/VoiceAnalyzer';
 import WhereToStart from './pages/WhereToStart';
 import HowTo from './pages/HowTo';
+import SecurityTips from './pages/SecurityTips';
+import StartTour from './pages/StartTour';
+import GetHelp from './pages/GetHelp';
+import BrowserExtension from './pages/BrowserExtension';
 import AlertsPage from './pages/AlertsPage';
 import AnalyzeEmailPage from './pages/AnalyzeEmailPage';
 import AnalyzeCallPage from './pages/AnalyzeCallPage';
@@ -192,6 +196,33 @@ export default function App() {
               <span>iMessage</span>
             </button>
 
+            <button
+              onClick={() => setCurrentPage('url-scanner')}
+              className={`nav-item ${currentPage === 'url-scanner' ? 'active' : ''}`}
+              title="URL Scanner"
+            >
+              <Link className="w-4 h-4" />
+              <span>URL Scanner</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentPage('password-checker')}
+              className={`nav-item ${currentPage === 'password-checker' ? 'active' : ''}`}
+              title="Password Checker"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Password Checker</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentPage('community-reports')}
+              className={`nav-item ${currentPage === 'community-reports' ? 'active' : ''}`}
+              title="Community Reports"
+            >
+              <Users className="w-4 h-4" />
+              <span>Community Reports</span>
+            </button>
+
             <div className="nav-divider"></div>
 
             <button
@@ -253,6 +284,10 @@ export default function App() {
         {currentPage === 'voice-analyzer' && <VoiceAnalyzer />}
         {currentPage === 'where-to-start' && <WhereToStart onNavigate={setCurrentPage} />}
         {currentPage === 'how-to' && <HowTo onNavigate={setCurrentPage} />}
+        {currentPage === 'security-tips' && <SecurityTips onNavigate={setCurrentPage} />}
+        {currentPage === 'start-tour' && <StartTour onNavigate={setCurrentPage} />}
+        {currentPage === 'get-help' && <GetHelp onNavigate={setCurrentPage} />}
+        {currentPage === 'browser-extension' && <BrowserExtension onNavigate={setCurrentPage} />}
       </main>
     </div>
   );

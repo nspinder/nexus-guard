@@ -6,18 +6,6 @@ import '../styles/WhereToStart.css';
 export default function WhereToStart() {
   const navigate = useNavigate();
 
-  const routeMap = {
-    dashboard: '/dashboard',
-    'url-scanner': '/url-scanner',
-    'phone-validator': '/phone-validator',
-    'password-checker': '/password-checker',
-    'how-to': '/how-to',
-  };
-
-  const handleNavigate = (route) => {
-    navigate(routeMap[route] || '/');
-  };
-
   return (
     <div className="guide-page">
       <div className="guide-header">
@@ -85,7 +73,7 @@ export default function WhereToStart() {
                   <li>Medium Risk: Orange (warning)</li>
                   <li>High Risk: Red (critical alert)</li>
                 </ul>
-                <button className="learn-btn" onClick={() => handleNavigate('dashboard')}>
+                <button className="learn-btn" onClick={() => navigate('/dashboard')}>
                   Go to Dashboard <ArrowRight size={16} />
                 </button>
               </div>
@@ -101,7 +89,7 @@ export default function WhereToStart() {
                   <li>Threat categories detected</li>
                   <li>Scan details from multiple sources</li>
                 </ul>
-                <button className="learn-btn" onClick={() => handleNavigate('url-scanner')}>
+                <button className="learn-btn" onClick={() => navigate('/url-scanner')}>
                   Try URL Scanner <ArrowRight size={16} />
                 </button>
               </div>
@@ -117,7 +105,7 @@ export default function WhereToStart() {
                   <li>Spoofed (fake caller ID)</li>
                   <li>From a legitimate business</li>
                 </ul>
-                <button className="learn-btn" onClick={() => handleNavigate('phone-validator')}>
+                <button className="learn-btn" onClick={() => navigate('/phone-validator')}>
                   Try Phone Validator <ArrowRight size={16} />
                 </button>
               </div>
@@ -133,7 +121,7 @@ export default function WhereToStart() {
                   <li>Common password patterns</li>
                   <li>Recommendations for better security</li>
                 </ul>
-                <button className="learn-btn" onClick={() => handleNavigate('password-checker')}>
+                <button className="learn-btn" onClick={() => navigate('/password-checker')}>
                   Check Passwords <ArrowRight size={16} />
                 </button>
               </div>
@@ -295,15 +283,15 @@ export default function WhereToStart() {
         <section className="next-steps">
           <h2>Ready to Get Started?</h2>
           <div className="next-steps-grid">
-            <button className="next-step-btn" onClick={() => handleNavigate('dashboard')}>
+            <button className="next-step-btn" onClick={() => navigate('/dashboard')}>
               <Shield size={24} />
               <span>View Dashboard</span>
             </button>
-            <button className="next-step-btn" onClick={() => handleNavigate('how-to')}>
+            <button className="next-step-btn" onClick={() => navigate('/how-to')}>
               <ArrowRight size={24} />
               <span>Read How-To Guides</span>
             </button>
-            <button className="next-step-btn" onClick={() => handleNavigate('url-scanner')}>
+            <button className="next-step-btn" onClick={() => navigate('/url-scanner')}>
               <Link size={24} />
               <span>Scan a URL</span>
             </button>

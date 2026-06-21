@@ -27,7 +27,7 @@ export default function Settings({ authToken: propToken }) {
 
   const fetchPreferences = async () => {
     try {
-      const data = await apiClient.get('/api/preferences');
+      const data = await apiClient.get('/preferences');
       setPreferences(data);
       setError(null);
     } catch (err) {
@@ -62,7 +62,7 @@ export default function Settings({ authToken: propToken }) {
     }
 
     try {
-      await apiClient.put('/api/preferences', preferences);
+      await apiClient.put('/preferences', preferences);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {

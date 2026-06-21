@@ -40,9 +40,13 @@ export function AuthProvider({ children }) {
 
   const verifyToken = async (token) => {
     try {
+      const userId = localStorage.getItem('userId');
+      const userEmail = localStorage.getItem('userEmail');
       const response = await fetch('/api/auth/verify', {
         headers: {
           Authorization: `Bearer ${token}`,
+          'X-User-Id': userId,
+          'X-User-Email': userEmail,
         },
       });
       return response.ok;
@@ -60,6 +64,22 @@ export function AuthProvider({ children }) {
       localStorage.setItem('userId', userData.id);
       localStorage.setItem('userEmail', userData.email);
       localStorage.setItem('authToken', token);
+
+      // Sync user with backend
+      try {
+        await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-User-Id': userData.id,
+            'X-User-Email': userData.email,
+            'Content-Type': 'application/json',
+          },
+        });
+      } catch (syncErr) {
+        console.warn('Failed to sync user with backend:', syncErr);
+      }
+
       return true;
     } catch (err) {
       const message = 'Failed to login';

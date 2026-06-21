@@ -26,6 +26,10 @@ import CommunityReports from './pages/CommunityReports';
 import VoiceAnalyzer from './pages/VoiceAnalyzer';
 import WhereToStart from './pages/WhereToStart';
 import HowTo from './pages/HowTo';
+import StartTour from './pages/StartTour';
+import SecurityTips from './pages/SecurityTips';
+import GetHelp from './pages/GetHelp';
+import BrowserExtension from './pages/BrowserExtension';
 
 export default function AppRouter() {
   return (
@@ -174,6 +178,38 @@ export default function AppRouter() {
                 element={
                   <ProtectedRoute>
                     <HowTo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/start-tour"
+                element={
+                  <ProtectedRoute>
+                    <StartTour />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/security-tips"
+                element={
+                  <ProtectedRoute>
+                    <SecurityTips />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/get-help"
+                element={
+                  <ProtectedRoute>
+                    <GetHelp />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/browser-extension"
+                element={
+                  <ProtectedRoute>
+                    <BrowserExtension />
                   </ProtectedRoute>
                 }
               />

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Settings as SettingsIcon, Home, AlertCircle, Mail, Phone, MessageCircle } from 'lucide-react';
+import { Shield, LogOut, Settings as SettingsIcon, Home, AlertCircle, Mail, Phone, MessageCircle, Link as LinkIcon, Lock, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import '../App.css';
 
@@ -7,8 +7,6 @@ export default function NavigationLayout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
-  console.log('NavigationLayout rendering. User:', user);
 
   const handleLogout = () => {
     logout();
@@ -18,8 +16,8 @@ export default function NavigationLayout({ children }) {
   const isActive = (pathname) => location.pathname === pathname;
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100%', flexDirection: 'row' }}>
-      <nav style={{ width: '260px', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', borderRight: '1px solid rgba(255, 255, 255, 0.1)', overflowY: 'auto', flexShrink: 0, height: '100vh', zIndex: 50 }}>
+    <div className="app-container">
+      <nav className="app-navbar">
         <div className="nav-container">
           <div className="nav-brand">
             <Shield className="w-6 h-6 text-blue-400" />
@@ -119,6 +117,33 @@ export default function NavigationLayout({ children }) {
               <span>iMessage</span>
             </Link>
 
+            <Link
+              to="/url-scanner"
+              className={`nav-item ${isActive('/url-scanner') ? 'active' : ''}`}
+              title="URL Scanner"
+            >
+              <LinkIcon className="w-4 h-4" />
+              <span>URL Scanner</span>
+            </Link>
+
+            <Link
+              to="/password-checker"
+              className={`nav-item ${isActive('/password-checker') ? 'active' : ''}`}
+              title="Password Checker"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Password Checker</span>
+            </Link>
+
+            <Link
+              to="/community-reports"
+              className={`nav-item ${isActive('/community-reports') ? 'active' : ''}`}
+              title="Community Reports"
+            >
+              <Users className="w-4 h-4" />
+              <span>Community Reports</span>
+            </Link>
+
             <div className="nav-divider"></div>
 
             <Link
@@ -144,7 +169,7 @@ export default function NavigationLayout({ children }) {
         </div>
       </nav>
 
-      <main style={{ flex: 1, overflowY: 'auto', background: '#ffffff', width: '100%' }}>{children}</main>
+      <main className="app-main">{children}</main>
     </div>
   );
 }
