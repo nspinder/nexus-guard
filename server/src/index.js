@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -54,6 +55,7 @@ const anthropic = new Anthropic({
 });
 
 // Middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
