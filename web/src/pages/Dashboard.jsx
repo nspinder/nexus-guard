@@ -143,10 +143,18 @@ export default function Dashboard({ user, authToken }) {
   });
 
   const totalAnalyzed = stats.emailsAnalyzed + stats.callsAnalyzed + stats.whatsappAnalyzed + stats.imessageAnalyzed + stats.phoneNumbersScanned;
-  const avgRiskScore = alerts.length > 0
-    ? Math.round(alerts.reduce((sum, alert) => sum + alert.probability, 0) / alerts.length)
-    : 0;
   const totalRiskItems = riskSummary.critical + riskSummary.high + riskSummary.medium + riskSummary.low;
+
+  // Calculate average risk score based on risk distribution
+  const avgRiskScore = totalRiskItems > 0
+    ? Math.round(
+        (riskSummary.critical * 90 +  // Critical (85+) use 90 as midpoint
+         riskSummary.high * 77.5 +    // High (70-85) use 77.5 as midpoint
+         riskSummary.medium * 60 +    // Medium (50-70) use 60 as midpoint
+         riskSummary.low * 25) /      // Low (<50) use 25 as midpoint
+        totalRiskItems
+      )
+    : 0;
   const suspiciousPhonePercentage = stats.phoneNumbersScanned > 0
     ? Math.round((stats.suspiciousNumbers / stats.phoneNumbersScanned) * 100)
     : 0;
