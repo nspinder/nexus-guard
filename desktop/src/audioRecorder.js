@@ -30,10 +30,17 @@ class AudioRecorder {
     const platform = callInfo.platform || 'unknown';
     const callerId = (callInfo.callerId || 'unknown').replace(/[^a-zA-Z0-9]/g, '');
 
-    this.currentRecordingPath = path.join(
-      this.recordingsDir,
-      `${platform}_${callerId}_${timestamp}.wav`
-    );
+    const filename = `${platform}_${callerId}_${timestamp}.wav`;
+    const base = path.resolve(this.recordingsDir);
+    const target = path.resolve(base, filename);
+    const relative = path.relative(base, target);
+    
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      console.error('Invalid recording path');
+      return null;
+    }
+    
+    this.currentRecordingPath = target;
 
     console.log(`🎤 Starting audio recording (${platform}):`, this.currentRecordingPath);
 
@@ -143,7 +150,13 @@ class AudioRecorder {
 
     try {
       fs.readdirSync(this.recordingsDir).forEach((file) => {
-        const filePath = path.join(this.recordingsDir, file);
+        const base = path.resolve(this.recordingsDir);
+        const target = path.resolve(base, file);
+        const relative = path.relative(base, target);
+        if (relative.startsWith('..') || path.isAbsolute(relative)) {
+          return;
+        }
+        const filePath = target;
         const stats = fs.statSync(filePath);
 
         if (stats.mtimeMs < sevenDaysAgo) {

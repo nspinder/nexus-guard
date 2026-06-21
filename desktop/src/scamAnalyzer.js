@@ -104,6 +104,10 @@ class ScamAnalyzer {
     }
 
     try {
+      if (audioPath.includes('..') || path.isAbsolute(audioPath)) {
+        console.error('Invalid audio path');
+        return null;
+      }
       const audioBuffer = fs.readFileSync(audioPath);
 
       const response = await axios.post(
