@@ -23,6 +23,7 @@ import phoneRouter from './routes/phone.js';
 import passwordRouter from './routes/password.js';
 import communityRouter from './routes/community.js';
 import voiceRouter from './routes/voice.js';
+import tokenService from './services/tokenService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '../../');
@@ -64,17 +65,36 @@ app.locals.prisma = prisma;
 app.locals.anthropic = anthropic;
 app.locals.io = io;
 
-// WebSocket connection handling
+// WebSocket connection handling with authentication
 io.on('connection', (socket) => {
-  const userId = socket.handshake.query.userId;
-  if (userId) {
-    socket.join(`user:${userId}`);
-    console.log(`✓ User ${userId} connected`);
+  const token = socket.handshake.auth.token || socket.handshake.query.token;
+
+  if (!token) {
+    console.warn('WebSocket connection attempted without token');
+    socket.disconnect(true);
+    return;
   }
 
-  socket.on('disconnect', () => {
-    console.log(`User ${userId} disconnected`);
-  });
+  try {
+    const verification = tokenService.verify(token);
+    if (!verification.valid) {
+      console.warn('WebSocket connection with invalid token');
+      socket.disconnect(true);
+      return;
+    }
+
+    const userId = verification.userId;
+    socket.userId = userId;
+    socket.join(`user:${userId}`);
+    console.log(`✓ User ${userId} connected`);
+
+    socket.on('disconnect', () => {
+      console.log(`User ${userId} disconnected`);
+    });
+  } catch (error) {
+    console.error('WebSocket authentication error:', error);
+    socket.disconnect(true);
+  }
 });
 
 // Routes

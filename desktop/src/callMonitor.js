@@ -47,21 +47,25 @@ class CallMonitor extends EventEmitter {
     Promise.all([
       this.checkWhatsAppCall(),
       this.checkFaceTimeCall(),
-    ]).then(([whatsappCall, facetimeCall]) => {
-      const callInfo = whatsappCall || facetimeCall;
+    ])
+      .then(([whatsappCall, facetimeCall]) => {
+        const callInfo = whatsappCall || facetimeCall;
 
-      if (callInfo && !this.activeCall) {
-        // Call started
-        this.activeCall = callInfo;
-        console.log(`📞 Call detected: ${callInfo.platform} from ${callInfo.callerId}`);
-        this.emit('call-started', callInfo);
-      } else if (!callInfo && this.activeCall) {
-        // Call ended
-        console.log(`📞 Call ended: ${this.activeCall.platform}`);
-        this.emit('call-ended', this.activeCall);
-        this.activeCall = null;
-      }
-    });
+        if (callInfo && !this.activeCall) {
+          // Call started
+          this.activeCall = callInfo;
+          console.log(`📞 Call detected: ${callInfo.platform} from ${callInfo.callerId}`);
+          this.emit('call-started', callInfo);
+        } else if (!callInfo && this.activeCall) {
+          // Call ended
+          console.log(`📞 Call ended: ${this.activeCall.platform}`);
+          this.emit('call-ended', this.activeCall);
+          this.activeCall = null;
+        }
+      })
+      .catch((error) => {
+        console.error('Error checking for active calls:', error.message);
+      });
   }
 
   checkWhatsAppCall() {

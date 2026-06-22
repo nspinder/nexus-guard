@@ -40,8 +40,10 @@ export function AuthProvider({ children }) {
 
   const verifyToken = async (token) => {
     try {
+      if (!token) return false;
       const userId = localStorage.getItem('userId');
       const userEmail = localStorage.getItem('userEmail');
+      if (!userId || !userEmail) return false;
       const response = await fetch('/api/auth/verify', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,6 +60,9 @@ export function AuthProvider({ children }) {
 
   const login = async (userData, token) => {
     try {
+      if (!userData?.id || !userData?.email || !token) {
+        throw new Error('Invalid login data');
+      }
       setError(null);
       setUser(userData);
       setAuthToken(token);

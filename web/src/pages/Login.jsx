@@ -43,14 +43,22 @@ export default function Login({ onLogin }) {
         return;
       }
 
-      // Create token (simple base64 - in production use proper OAuth)
-      const token = btoa(`${email}:${password}`);
+      // Call backend to authenticate and get a proper token
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Login via context
-      const success = await login({
-        id: `user-${Date.now()}`,
-        email,
-      }, token);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Login failed');
+      }
+
+      const { token, user } = await response.json();
+
+      // Login via context with real token
+      const success = await login(user, token);
 
       if (success) {
         showSuccess('Login successful!');

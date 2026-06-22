@@ -119,6 +119,9 @@ callsRouter.get('/history', verifyToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const pageLimit = Math.min(Math.max(parseInt(limit) || 50, 1), 100);
+    const pageOffset = Math.max(parseInt(offset) || 0, 0);
+
     // Get messages that are marked as calls (longer transcripts)
     const calls = await req.app.locals.prisma.whatsappMessage.findMany({
       where: {
@@ -126,8 +129,8 @@ callsRouter.get('/history', verifyToken, async (req, res) => {
         messageText: { gte: 100 }, // Calls have longer transcripts
       },
       orderBy: { createdAt: 'desc' },
-      take: parseInt(limit),
-      skip: parseInt(offset),
+      take: pageLimit,
+      skip: pageOffset,
     });
 
     const total = await req.app.locals.prisma.whatsappMessage.count({

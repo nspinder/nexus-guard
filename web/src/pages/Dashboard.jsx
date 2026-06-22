@@ -93,8 +93,8 @@ export default function Dashboard({ user, authToken }) {
           const suspiciousCount = phoneData.data.filter(p => p.isSpam || p.riskLevel === 'high' || p.riskLevel === 'critical').length;
           setStats(prev => ({
             ...prev,
-            phoneNumbersScanned: phoneData.total || phoneData.data.length,
-            suspiciousNumbers: suspiciousCount,
+            phoneNumbersScanned: Number(phoneData.total || phoneData.data.length),
+            suspiciousNumbers: Number(suspiciousCount),
           }));
         }
       } catch (error) {
@@ -155,8 +155,8 @@ export default function Dashboard({ user, authToken }) {
         totalRiskItems
       )
     : 0;
-  const suspiciousPhonePercentage = stats.phoneNumbersScanned > 0
-    ? Math.round((stats.suspiciousNumbers / stats.phoneNumbersScanned) * 100)
+  const suspiciousPhonePercentage = Number(stats.phoneNumbersScanned) > 0
+    ? Math.round((Number(stats.suspiciousNumbers) / Number(stats.phoneNumbersScanned)) * 100)
     : 0;
 
   return (

@@ -7,9 +7,14 @@ export function useRealtimeAlerts(userId, onScamDetected) {
   useEffect(() => {
     if (!userId) return;
 
-    // Create socket connection
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+
+    // Create socket connection with authenticated token
     socket = io(window.location.origin, {
-      query: { userId },
+      auth: {
+        token,
+      },
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
@@ -43,6 +48,4 @@ export function useRealtimeAlerts(userId, onScamDetected) {
       }
     };
   }, [userId, onScamDetected]);
-
-  return socket;
 }

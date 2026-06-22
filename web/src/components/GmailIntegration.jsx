@@ -37,6 +37,9 @@ export default function GmailIntegration({ authToken }) {
           'X-User-Email': userEmail,
         },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       setGmailConnected(data.connected);
       setGmailEmail(data.email);
@@ -57,6 +60,9 @@ export default function GmailIntegration({ authToken }) {
           'X-User-Email': userEmail,
         },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       window.location.href = data.authUrl;
     } catch (error) {
@@ -82,6 +88,9 @@ export default function GmailIntegration({ authToken }) {
         },
         body: JSON.stringify({ daysBack: 30 }),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       alert('Gmail sync started! Emails will be imported in the background.');
     } catch (error) {

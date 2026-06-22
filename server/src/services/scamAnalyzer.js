@@ -29,8 +29,17 @@ Respond in JSON format only (no other text):
       ],
     });
 
+    if (!message.content || !message.content[0] || !message.content[0].text) {
+      throw new Error('Invalid response from Claude API');
+    }
+
     const responseText = message.content[0].text.trim();
     const analysis = JSON.parse(responseText);
+
+    // Validate response structure
+    if (typeof analysis.probability !== 'number' || analysis.probability < 0 || analysis.probability > 100) {
+      analysis.probability = 30;
+    }
 
     return analysis;
   } catch (error) {
@@ -73,8 +82,17 @@ Respond in JSON format only:
       ],
     });
 
+    if (!message.content || !message.content[0] || !message.content[0].text) {
+      throw new Error('Invalid response from Claude API');
+    }
+
     const responseText = message.content[0].text.trim();
     const analysis = JSON.parse(responseText);
+
+    // Validate response structure
+    if (typeof analysis.probability !== 'number' || analysis.probability < 0 || analysis.probability > 100) {
+      analysis.probability = 20;
+    }
 
     return analysis;
   } catch (error) {

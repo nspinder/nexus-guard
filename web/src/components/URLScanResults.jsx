@@ -31,13 +31,13 @@ export default function URLScanResults({ urls, onClose }) {
 
               {url.isMalicious && (
                 <div className="url-threats">
-                  <strong>Risk: {url.riskLevel.toUpperCase()}</strong>
-                  {url.sources && url.sources.length > 0 && (
+                  <strong>Risk: {url.riskLevel ? url.riskLevel.toUpperCase() : 'UNKNOWN'}</strong>
+                  {Array.isArray(url.sources) && url.sources.length > 0 && (
                     <div className="threat-sources">
                       Detected by: {url.sources.join(', ')}
                     </div>
                   )}
-                  {url.threats && url.threats.length > 0 && (
+                  {Array.isArray(url.threats) && url.threats.length > 0 && (
                     <div className="threat-list">
                       {url.threats.map((threat, i) => (
                         <div key={i} className="threat-item">
@@ -49,7 +49,7 @@ export default function URLScanResults({ urls, onClose }) {
                 </div>
               )}
 
-              {!url.isMalicious && url.details?.basicChecks?.warnings && (
+              {!url.isMalicious && Array.isArray(url.details?.basicChecks?.warnings) && (
                 <div className="url-warnings">
                   {url.details.basicChecks.warnings.map((warning, i) => (
                     <div key={i} className="warning-item">

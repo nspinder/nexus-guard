@@ -37,6 +37,9 @@ export default function OutlookIntegration({ authToken }) {
           'X-User-Email': userEmail,
         },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       setOutlookConnected(data.connected);
       setOutlookEmail(data.email);
@@ -66,6 +69,9 @@ export default function OutlookIntegration({ authToken }) {
           'X-User-Email': userEmail,
         },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       if (isValidRedirectUrl(data.authUrl)) {
         window.location.href = data.authUrl;
@@ -95,6 +101,9 @@ export default function OutlookIntegration({ authToken }) {
         },
         body: JSON.stringify({ daysBack: 30 }),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       alert('Outlook sync started! Emails will be imported in the background.');
     } catch (error) {

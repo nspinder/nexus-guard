@@ -1,7 +1,55 @@
 import express from 'express';
 import { verifyToken } from '../middleware/clerk.js';
+import tokenService from '../services/tokenService.js';
 
 export const authRouter = express.Router();
+
+// Login endpoint - generates secure token
+authRouter.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Validate inputs
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // In production, verify password against hashed password in database
+    // For MVP, we'll accept the password as-is (use proper auth like Clerk/Auth0)
+
+    // Generate user ID
+    const userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Generate secure token
+    const token = tokenService.generate(userId, email);
+
+    // Get or create user in database
+    const user = await getOrCreateUser(userId, email, req.app.locals.prisma);
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        clerkId: user.clerkId,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error.message);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// Logout endpoint - revokes token
+authRouter.post('/logout', verifyToken, (req, res) => {
+  // Token is passed in Authorization header
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.replace('Bearer ', '');
+    tokenService.revoke(token);
+  }
+  res.json({ success: true });
+});
 
 // Helper function to get or create user
 async function getOrCreateUser(userId, email, prisma) {

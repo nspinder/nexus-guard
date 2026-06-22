@@ -23,33 +23,45 @@ export default function EmailHistory({ authToken }) {
   }, [searchQuery, riskFilter]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const fetchEmails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const offset = (currentPage - 1) * PAGE_SIZE;
+        const params = new URLSearchParams();
+        params.append('limit', PAGE_SIZE);
+        params.append('offset', offset);
+        if (searchQuery) params.append('search', searchQuery);
+        if (riskFilter) params.append('riskLevel', riskFilter);
+
+        const data = await apiClient.get(
+          `/email/history?${params.toString()}`
+        );
+
+        if (!isMounted) return;
+
+        setEmails(data.emails || []);
+        setTotalItems(data.total || 0);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Failed to fetch email history:', err);
+        setError(err);
+        setEmails([]);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchEmails();
-  }, [currentPage, searchQuery, riskFilter, authToken]);
 
-  const fetchEmails = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const offset = (currentPage - 1) * PAGE_SIZE;
-      const params = new URLSearchParams();
-      params.append('limit', PAGE_SIZE);
-      params.append('offset', offset);
-      if (searchQuery) params.append('search', searchQuery);
-      if (riskFilter) params.append('riskLevel', riskFilter);
-
-      const data = await apiClient.get(
-        `/email/history?${params.toString()}`
-      );
-      setEmails(data.emails || []);
-      setTotalItems(data.total || 0);
-    } catch (err) {
-      console.error('Failed to fetch email history:', err);
-      setError(err);
-      setEmails([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, [currentPage, searchQuery, riskFilter]);
 
   const handleDelete = async (emailId) => {
     if (!window.confirm('Delete this email record?')) return;

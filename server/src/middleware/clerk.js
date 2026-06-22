@@ -1,4 +1,6 @@
-// Clerk middleware - verifies auth from frontend
+import tokenService from '../services/tokenService.js';
+
+// Verify token validity
 export const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -7,20 +9,19 @@ export const verifyToken = async (req, res, next) => {
   }
 
   try {
-    // For development, we'll accept any bearer token
-    // In production, you would verify with Clerk's API
     const token = authHeader.replace('Bearer ', '');
 
-    // Extract userId from header (sent by frontend)
-    const userId = req.headers['x-user-id'] || req.body?.userId;
+    // Verify token with token service
+    const verification = tokenService.verify(token);
 
-    if (!token || !userId) {
-      return res.status(401).json({ error: 'Missing auth credentials' });
+    if (!verification.valid) {
+      return res.status(401).json({ error: verification.error || 'Invalid token' });
     }
 
+    // Attach auth data to request
     req.auth = {
-      userId,
-      email: req.headers['x-user-email'],
+      userId: verification.userId,
+      email: verification.email,
     };
 
     next();
