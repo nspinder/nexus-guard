@@ -28,46 +28,64 @@ export default function IMessageHistory() {
   }, [searchQuery, riskFilter]);
 
   useEffect(() => {
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 10000);
-    return () => clearInterval(interval);
-  }, [currentPage, searchQuery, riskFilter]);
+    let isMounted = true;
+    let isRequesting = false;
 
-  const fetchMessages = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const offset = (currentPage - 1) * PAGE_SIZE;
-      const params = new URLSearchParams();
-      params.append('limit', PAGE_SIZE);
-      params.append('offset', offset);
-      if (searchQuery) params.append('search', searchQuery);
-      if (riskFilter) params.append('riskLevel', riskFilter);
+    const fetchMessages = async () => {
+      if (isRequesting) return;
+      isRequesting = true;
 
-      const data = await apiClient.get(
-        `/imessage/history?${params.toString()}`
-      );
+      try {
+        setLoading(true);
+        setError(null);
+        const offset = (currentPage - 1) * PAGE_SIZE;
+        const params = new URLSearchParams();
+        params.append('limit', PAGE_SIZE);
+        params.append('offset', offset);
+        if (searchQuery) params.append('search', searchQuery);
+        if (riskFilter) params.append('riskLevel', riskFilter);
 
-      setMessages(data.messages || []);
-      setTotalItems(data.total || 0);
+        const data = await apiClient.get(
+          `/imessage/history?${params.toString()}`
+        );
 
-      // Scan URLs in messages
-      const urlMap = {};
-      for (const message of (data.messages || [])) {
-        const urls = await scanURLs(message.messageText);
-        if (urls.length > 0) {
-          urlMap[message.id] = urls;
+        if (!isMounted) return;
+
+        setMessages(data.messages || []);
+        setTotalItems(data.total || 0);
+
+        // Scan URLs in messages
+        const urlMap = {};
+        for (const message of (data.messages || [])) {
+          const urls = await scanURLs(message.messageText);
+          if (urls.length > 0) {
+            urlMap[message.id] = urls;
+          }
+        }
+
+        if (isMounted) {
+          setMessageURLs(urlMap);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Failed to fetch iMessage history:', err);
+        setError(err);
+        setMessages([]);
+      } finally {
+        isRequesting = false;
+        if (isMounted) {
+          setLoading(false);
         }
       }
-      setMessageURLs(urlMap);
-    } catch (err) {
-      console.error('Failed to fetch iMessage history:', err);
-      setError(err);
-      setMessages([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [currentPage, searchQuery, riskFilter, scanURLs]);
 
   const toggleExpanded = (messageId) => {
     setExpandedMessages((prev) => ({
