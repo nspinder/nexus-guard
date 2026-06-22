@@ -77,23 +77,9 @@ class NotificationMonitor {
   checkForNewMessages(onNewMessage) {
     try {
       // Use AppleScript to get recent messages from Messages app
-      const script = `
-tell application "Messages"
-  set output to ""
-  repeat with aChat in chats
-    try
-      set chatName to name of aChat
-      set chatID to id of aChat
-      -- Try to get the last message in the chat (if accessible)
-      try
-        set lastMsg to last message of aChat
-        set output to output & "Chat: " & chatName & " ID: " & chatID & linefeed
-      end try
-    end try
-  end repeat
-  return output
-end tell
-      `;
+      const script = `tell application "Messages"
+  return "active"
+end tell`;
 
       const scriptFile = path.join(os.homedir(), '.nexusguard/get_messages.scpt');
       fs.writeFileSync(scriptFile, script);
