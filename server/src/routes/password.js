@@ -57,12 +57,12 @@ router.get('/history', verifyToken, async (req, res) => {
   try {
     const userId = req.auth.userId;
     const prisma = req.app.locals.prisma;
-    const limit = parseInt(req.query.limit) || 50;
+    const pageLimit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 100);
 
     const checks = await prisma.passwordCheck.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: limit,
+      take: pageLimit,
     });
 
     res.json({

@@ -71,8 +71,8 @@ router.get('/history', verifyToken, async (req, res) => {
   try {
     const { email } = req.auth;
     const prisma = req.app.locals.prisma;
-    const limit = parseInt(req.query.limit) || 50;
-    const offset = parseInt(req.query.offset) || 0;
+    const pageLimit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 100);
+    const pageOffset = Math.max(parseInt(req.query.offset) || 0, 0);
 
     const user = await prisma.user.findUnique({
       where: { email },
@@ -85,8 +85,8 @@ router.get('/history', verifyToken, async (req, res) => {
     const validations = await prisma.phoneValidation.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset,
+      take: pageLimit,
+      skip: pageOffset,
     });
 
     const total = await prisma.phoneValidation.count({

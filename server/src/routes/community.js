@@ -42,12 +42,15 @@ router.get('/reports', async (req, res) => {
     const { type, target, status, limit, offset } = req.query;
     const prisma = req.app.locals.prisma;
 
+    const pageLimit = Math.min(Math.max(parseInt(limit) || 50, 1), 100);
+    const pageOffset = Math.max(parseInt(offset) || 0, 0);
+
     const result = await communityReports.getReports(prisma, {
       type,
       target,
       status,
-      limit: parseInt(limit) || 50,
-      offset: parseInt(offset) || 0,
+      limit: pageLimit,
+      offset: pageOffset,
     });
 
     // If user is authenticated, get their votes
