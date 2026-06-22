@@ -7,6 +7,7 @@ const AudioRecorder = require('./audioRecorder');
 const ScamAnalyzer = require('./scamAnalyzer');
 const LiveAnalyzer = require('./liveAnalyzer');
 const NotificationMonitor = require('./notificationMonitor');
+const PermissionManager = require('./permissionManager');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -17,6 +18,7 @@ let audioRecorder;
 let scamAnalyzer;
 let liveAnalyzer;
 let notificationMonitor;
+let permissionManager;
 let isMonitoring = false;
 let currentCallInfo = null;
 
@@ -45,6 +47,7 @@ app.on('ready', () => {
   createWindow();
 
   // Initialize services
+  permissionManager = new PermissionManager();
   callMonitor = new CallMonitor();
   audioRecorder = new AudioRecorder();
   scamAnalyzer = new ScamAnalyzer();
@@ -53,6 +56,10 @@ app.on('ready', () => {
     process.env.BACKEND_URL || 'http://localhost:3001'
   );
   notificationMonitor = new NotificationMonitor();
+
+  // Send permission status to UI
+  const permissions = permissionManager.getPermissionsStatus();
+  mainWindow?.webContents.send('permissions-status', permissions);
 
   // Listen for call state changes
   callMonitor.on('call-started', (callInfo) => {
@@ -262,6 +269,50 @@ ipcMain.on('test-imessage', async (event, data) => {
 
 ipcMain.handle('get-monitoring-status', () => {
   return isMonitoring;
+});
+
+// Permission and Setup Wizard IPC handlers
+ipcMain.handle('get-permissions-status', () => {
+  return permissionManager.getPermissionsStatus();
+});
+
+ipcMain.on('open-permission-settings', (event, permission) => {
+  console.log(`Opening ${permission} settings...`);
+  switch (permission) {
+    case 'microphone':
+      permissionManager.openMicrophoneSettings();
+      break;
+    case 'screenRecording':
+      permissionManager.openScreenRecordingSettings();
+      break;
+    case 'accessibility':
+      permissionManager.openAccessibilitySettings();
+      break;
+    case 'fullDiskAccess':
+      permissionManager.openFullDiskAccessSettings();
+      break;
+  }
+});
+
+ipcMain.on('mark-permission-granted', (event, permission) => {
+  console.log(`Marking ${permission} as granted`);
+  permissionManager.markPermissionGranted(permission);
+  const permissions = permissionManager.getPermissionsStatus();
+  mainWindow?.webContents.send('permissions-status', permissions);
+});
+
+ipcMain.on('mark-setup-wizard-completed', () => {
+  permissionManager.markSetupWizardCompleted();
+});
+
+ipcMain.on('reset-setup-wizard', () => {
+  permissionManager.resetSetupWizard();
+  const permissions = permissionManager.getPermissionsStatus();
+  mainWindow?.webContents.send('permissions-status', permissions);
+});
+
+ipcMain.handle('get-setup-instructions', (event, permission) => {
+  return permissionManager.getSetupInstructions(permission);
 });
 
 function setupMenu() {

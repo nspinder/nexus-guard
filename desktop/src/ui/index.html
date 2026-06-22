@@ -128,6 +128,39 @@
     </div>
   </div>
 
+  <div id="setupWizardModal" class="modal setup-wizard" style="display: none;">
+    <div class="modal-content setup-modal">
+      <div class="setup-header">
+        <h2>🔧 Setup Wizard</h2>
+        <p>Grant permissions to enable full monitoring</p>
+      </div>
+
+      <div class="setup-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="setupProgress"></div>
+        </div>
+        <p id="progressText">0% Complete</p>
+      </div>
+
+      <div class="permissions-checklist" id="permissionsChecklist">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div id="permissionDetail" class="permission-detail" style="display: none;">
+        <h3 id="detailTitle"></h3>
+        <p id="detailDescription"></p>
+        <div id="detailSteps" class="steps-list"></div>
+        <button class="btn btn-primary" onclick="openPermissionSettings()">Open System Preferences</button>
+        <button class="btn btn-secondary" onclick="verifyPermission()">✓ Verified</button>
+      </div>
+
+      <div class="setup-footer">
+        <button class="btn btn-secondary" onclick="skipSetupWizard()">Skip</button>
+        <button class="btn btn-primary" onclick="closeSetupWizard()" id="completeBtn" style="display: none;">Complete Setup</button>
+      </div>
+    </div>
+  </div>
+
   <script src="renderer.js"></script>
 </body>
 </html>

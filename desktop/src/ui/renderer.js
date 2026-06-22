@@ -233,3 +233,169 @@ window.electronAPI.getMonitoringStatus().then((status) => {
   isMonitoring = status;
   updateUI();
 });
+
+// ============= Setup Wizard Functions =============
+
+let currentPermissions = {};
+let selectedPermission = null;
+
+// Initialize setup wizard
+async function initializeSetupWizard() {
+  const permissions = await window.electronAPI.getPermissionsStatus();
+  currentPermissions = permissions;
+
+  // Check if setup wizard was already completed
+  if (permissions.setupWizardCompleted && permissions.microphone) {
+    // Don't show wizard
+    return;
+  }
+
+  // Show setup wizard if any permission is missing
+  if (!permissions.microphone || !permissions.screenRecording ||
+      !permissions.accessibility || !permissions.fullDiskAccess) {
+    showSetupWizard();
+  }
+}
+
+function showSetupWizard() {
+  const modal = document.getElementById('setupWizardModal');
+  modal.style.display = 'flex';
+  renderPermissionsChecklist();
+}
+
+function renderPermissionsChecklist() {
+  const checklist = document.getElementById('permissionsChecklist');
+  checklist.innerHTML = '';
+
+  const permissions = [
+    { id: 'microphone', name: '🎤 Microphone Access', description: 'Record call audio' },
+    { id: 'screenRecording', name: '📹 Screen Recording', description: 'Detect active calls' },
+    { id: 'accessibility', name: '♿ Accessibility', description: 'Interact with apps' },
+    { id: 'fullDiskAccess', name: '💾 Full Disk Access', description: 'Read iMessages' },
+  ];
+
+  permissions.forEach((perm) => {
+    const item = document.createElement('div');
+    item.className = `permission-item ${currentPermissions[perm.id] ? 'granted' : ''}`;
+    item.onclick = () => selectPermission(perm.id);
+
+    item.innerHTML = `
+      <div class="permission-icon">${perm.name.split(' ')[0]}</div>
+      <div class="permission-info">
+        <div class="permission-name">${perm.name.substring(2)}</div>
+        <div class="permission-status">${currentPermissions[perm.id] ? '✓ Granted' : 'Not granted'}</div>
+      </div>
+      <div class="permission-checkbox">${currentPermissions[perm.id] ? '✓' : ''}</div>
+    `;
+
+    checklist.appendChild(item);
+  });
+
+  updateProgress();
+}
+
+async function selectPermission(permissionId) {
+  selectedPermission = permissionId;
+  const detail = document.getElementById('permissionDetail');
+  const instructions = await window.electronAPI.getSetupInstructions(permissionId);
+
+  if (instructions) {
+    document.getElementById('detailTitle').textContent = instructions.title;
+    document.getElementById('detailDescription').textContent = instructions.description;
+
+    const stepsList = document.getElementById('detailSteps');
+    stepsList.innerHTML = `<ol>${instructions.steps.map(step => `<li>${step}</li>`).join('')}</ol>`;
+  }
+
+  detail.style.display = 'block';
+
+  // Highlight selected permission
+  document.querySelectorAll('.permission-item').forEach((item, index) => {
+    item.classList.remove('active');
+    if (
+      item.querySelector('.permission-name').textContent.includes(
+        instructions.title.split(' ').slice(1).join(' ')
+      )
+    ) {
+      item.classList.add('active');
+    }
+  });
+}
+
+function openPermissionSettings() {
+  if (selectedPermission) {
+    window.electronAPI.openPermissionSettings(selectedPermission);
+  }
+}
+
+async function verifyPermission() {
+  if (selectedPermission) {
+    window.electronAPI.markPermissionGranted(selectedPermission);
+    await loadPermissionsStatus();
+    renderPermissionsChecklist();
+    document.getElementById('permissionDetail').style.display = 'none';
+  }
+}
+
+async function loadPermissionsStatus() {
+  currentPermissions = await window.electronAPI.getPermissionsStatus();
+}
+
+function updateProgress() {
+  const granted = Object.keys(currentPermissions).filter(
+    (key) => key !== 'setupWizardCompleted' && key !== 'canDetectMicrophone' && currentPermissions[key]
+  ).length;
+  const total = 4;
+  const percentage = Math.round((granted / total) * 100);
+
+  document.getElementById('setupProgress').style.width = percentage + '%';
+  document.getElementById('progressText').textContent = `${percentage}% Complete`;
+
+  const completeBtn = document.getElementById('completeBtn');
+  if (percentage === 100) {
+    completeBtn.style.display = 'inline-block';
+  } else {
+    completeBtn.style.display = 'none';
+  }
+}
+
+function closeSetupWizard() {
+  if (currentPermissions.microphone) {
+    window.electronAPI.markSetupWizardCompleted();
+    document.getElementById('setupWizardModal').style.display = 'none';
+  } else {
+    alert('Microphone permission is required to use NexusGuard.');
+  }
+}
+
+function skipSetupWizard() {
+  const confirmed = confirm(
+    'Skipping setup may prevent some features from working.\n\nAre you sure you want to skip?'
+  );
+  if (confirmed) {
+    document.getElementById('setupWizardModal').style.display = 'none';
+  }
+}
+
+// Listen for permission status updates
+window.electronAPI.onPermissionsStatus((permissions) => {
+  currentPermissions = permissions;
+  if (document.getElementById('setupWizardModal').style.display === 'flex') {
+    renderPermissionsChecklist();
+  }
+});
+
+// Listen for iMessage alerts
+window.electronAPI.onIMessageAlert?.((alert) => {
+  console.log('iMessage alert:', alert);
+  // Create notification for iMessage alert
+  const notification = new Notification('🚨 iMessage Alert', {
+    body: `Potential scam from ${alert.sender} (${alert.probability}% probability)`,
+    icon: '🚨',
+  });
+});
+
+// Start setup wizard on load
+window.addEventListener('load', () => {
+  initializeSetupWizard();
+});
