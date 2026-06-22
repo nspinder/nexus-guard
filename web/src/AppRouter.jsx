@@ -30,6 +30,7 @@ import StartTour from './pages/StartTour';
 import SecurityTips from './pages/SecurityTips';
 import GetHelp from './pages/GetHelp';
 import BrowserExtension from './pages/BrowserExtension';
+import AnalysisHub from './pages/AnalysisHub';
 
 export default function AppRouter() {
   return (
@@ -210,6 +211,14 @@ export default function AppRouter() {
                 element={
                   <ProtectedRoute>
                     <BrowserExtension />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analysis-hub"
+                element={
+                  <ProtectedRoute>
+                    <AnalysisHub />
                   </ProtectedRoute>
                 }
               />

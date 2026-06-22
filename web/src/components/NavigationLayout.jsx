@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Settings as SettingsIcon, Home, AlertCircle, Mail, Phone, MessageCircle, Link as LinkIcon, Lock, Users } from 'lucide-react';
+import { Shield, LogOut, Settings as SettingsIcon, Home, AlertCircle, Mail, Phone, MessageCircle, Link as LinkIcon, Lock, Users, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import '../App.css';
 
@@ -41,6 +41,15 @@ export default function NavigationLayout({ children }) {
             >
               <Shield className="w-4 h-4" />
               <span>Dashboard</span>
+            </Link>
+
+            <Link
+              to="/analysis-hub"
+              className={`nav-item ${isActive('/analysis-hub') ? 'active' : ''}`}
+              title="Analysis Hub"
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>Analysis Hub</span>
             </Link>
 
             <div className="nav-divider"></div>
