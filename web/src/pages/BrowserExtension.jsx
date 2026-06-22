@@ -118,6 +118,64 @@ export default function BrowserExtension() {
           </div>
         </div>
 
+        {/* Desktop App Section */}
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-md p-8 mb-12 border border-blue-200">
+          <div className="flex items-center gap-3 mb-4">
+            <Download className="w-8 h-8 text-blue-600" />
+            <h2 className="text-2xl font-bold text-slate-900">Desktop App for Mac</h2>
+          </div>
+          <p className="text-slate-600 mb-6">
+            Monitor FaceTime calls, WhatsApp calls, and iMessages in real-time. Get instant alerts for suspicious conversations with live transcription and AI analysis.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <div className="text-3xl mb-2">📞</div>
+              <h3 className="font-bold text-slate-900 mb-2">Call Monitoring</h3>
+              <p className="text-sm text-slate-600">Detects and records FaceTime & WhatsApp calls with real-time transcription</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <div className="text-3xl mb-2">📨</div>
+              <h3 className="font-bold text-slate-900 mb-2">Message Analysis</h3>
+              <p className="text-sm text-slate-600">Monitors incoming iMessages and analyzes them for scam indicators</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <div className="text-3xl mb-2">🚨</div>
+              <h3 className="font-bold text-slate-900 mb-2">Live Alerts</h3>
+              <p className="text-sm text-slate-600">Get instant notifications when threats are detected during calls</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 mb-6 border-l-4 border-blue-600">
+            <h3 className="font-bold text-slate-900 mb-2">Quick Start:</h3>
+            <ol className="list-decimal list-inside space-y-2 text-slate-600 text-sm">
+              <li>Clone or download from: <code className="bg-slate-100 px-2 py-1 rounded">git clone https://github.com/nspinder/nexus-guard.git</code></li>
+              <li>Run: <code className="bg-slate-100 px-2 py-1 rounded">cd nexus-guard/desktop && npm install</code></li>
+              <li>Configure .env with your API keys and backend URL</li>
+              <li>Launch: <code className="bg-slate-100 px-2 py-1 rounded">npm start</code></li>
+              <li>Follow the setup wizard to grant permissions</li>
+            </ol>
+          </div>
+
+          <div className="flex gap-4">
+            <a
+              href="https://github.com/nspinder/nexus-guard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+            >
+              <Download className="w-5 h-5" />
+              Get from GitHub
+            </a>
+            <a
+              href="/how-to"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-900 rounded-lg hover:bg-slate-300 transition font-semibold"
+            >
+              📖 View Setup Guide
+            </a>
+          </div>
+        </div>
+
         {/* Browser Downloads */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-12">
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Choose Your Browser</h2>

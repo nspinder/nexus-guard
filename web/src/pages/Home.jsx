@@ -146,6 +146,17 @@ export default function Home() {
                 Install Now <ArrowRight size={16} />
               </button>
             </div>
+
+            <div className="feature-item" style={{borderLeft: '4px solid #8b5cf6'}}>
+              <div className="feature-icon">🖥️</div>
+              <div className="feature-text">
+                <h3>Desktop App (macOS)</h3>
+                <p>Monitor FaceTime calls, WhatsApp calls, and iMessages in real-time. Get live alerts for suspicious conversations with instant transcription.</p>
+              </div>
+              <button onClick={() => navigate('/browser-extension')} className="feature-btn">
+                Download <ArrowRight size={16} />
+              </button>
+            </div>
           </div>
         </section>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Link, Phone, Lock, Mic, Users, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp, Link, Phone, Lock, Mic, Users, Globe, Download } from 'lucide-react';
 import '../styles/HowTo.css';
 
 export default function HowTo() {
@@ -12,6 +12,50 @@ export default function HowTo() {
   };
 
   const guides = [
+    {
+      title: 'Desktop App: Real-Time Call Monitoring',
+      icon: Download,
+      steps: [
+        {
+          num: 1,
+          title: 'Download the Desktop App',
+          description: 'Go to the "Browser Extension" section and click "Install Desktop App". Or clone the repository from GitHub: nexus-guard/desktop'
+        },
+        {
+          num: 2,
+          title: 'Install Dependencies',
+          description: 'Open Terminal and run: cd nexus-guard/desktop && npm install. This installs Node.js packages needed for the app.'
+        },
+        {
+          num: 3,
+          title: 'Configure Credentials',
+          description: 'Copy .env.example to .env and fill in your backend URL, authentication token, and Deepgram API key. Get a free key from console.deepgram.com'
+        },
+        {
+          num: 4,
+          title: 'Launch the App',
+          description: 'Run: npm start. The NexusGuard Desktop window opens with a setup wizard to grant system permissions.'
+        },
+        {
+          num: 5,
+          title: 'Grant Permissions',
+          description: 'Follow the setup wizard to grant: Microphone (record calls), Screen Recording (detect calls), Accessibility (interact with apps), Full Disk Access (read messages).'
+        },
+        {
+          num: 6,
+          title: 'Start Monitoring',
+          description: 'Click "Start Monitoring". The app now watches for incoming FaceTime/WhatsApp calls and iMessages. You\'ll get real-time alerts!'
+        }
+      ],
+      tips: [
+        'The desktop app records audio locally and never uploads raw audio - only transcripts to your backend',
+        'Grant all permissions for full functionality, especially Microphone and Screen Recording',
+        'Get a free Deepgram API key - they give free credits monthly for speech-to-text',
+        'Make sure your backend server is running (npm run dev in /server folder)',
+        'The app can run in the background and will alert you to suspicious calls',
+        'All recordings are stored in ~/.nexusguard/recordings/ and auto-cleaned after 7 days'
+      ]
+    },
     {
       title: 'URL Scanner: Check Links Safely',
       icon: Link,
@@ -329,14 +373,15 @@ export default function HowTo() {
                         className="try-btn"
                         onClick={() => {
                           const featureMap = {
-                            0: 'url-scanner',
-                            1: 'phone-validator',
-                            2: 'password-checker',
-                            3: 'voice-analyzer',
-                            4: 'community-reports',
-                            5: 'home'
+                            0: 'browser-extension',
+                            1: 'url-scanner',
+                            2: 'phone-validator',
+                            3: 'password-checker',
+                            4: 'voice-analyzer',
+                            5: 'community-reports',
+                            6: 'home'
                           };
-                          onNavigate && onNavigate(featureMap[index]);
+                          navigate(featureMap[index]);
                         }}
                       >
                         Try {guide.title.split(':')[0]} Now
