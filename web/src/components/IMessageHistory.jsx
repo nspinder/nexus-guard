@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Trash2 } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import { useURLScanning } from '../hooks/useURLScanning';
@@ -54,17 +54,22 @@ export default function IMessageHistory() {
         setMessages(data.messages || []);
         setTotalItems(data.total || 0);
 
-        // Scan URLs in messages
-        const urlMap = {};
-        for (const message of (data.messages || [])) {
-          const urls = await scanURLs(message.messageText);
-          if (urls.length > 0) {
-            urlMap[message.id] = urls;
+        // Scan URLs in messages (async but don't wait for all to complete)
+        if (scanURLs && data.messages) {
+          const urlMap = {};
+          for (const message of data.messages) {
+            try {
+              const urls = await scanURLs(message.messageText);
+              if (urls && urls.length > 0) {
+                urlMap[message.id] = urls;
+              }
+            } catch (scanErr) {
+              console.warn('Failed to scan URLs in message:', scanErr);
+            }
           }
-        }
-
-        if (isMounted) {
-          setMessageURLs(urlMap);
+          if (isMounted) {
+            setMessageURLs(urlMap);
+          }
         }
       } catch (err) {
         if (!isMounted) return;
@@ -85,7 +90,7 @@ export default function IMessageHistory() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, [currentPage, searchQuery, riskFilter, scanURLs]);
+  }, [currentPage, searchQuery, riskFilter]);
 
   const toggleExpanded = (messageId) => {
     setExpandedMessages((prev) => ({
